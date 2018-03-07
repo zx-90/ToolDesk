@@ -22,7 +22,7 @@
 
 #include <QWidget>
 #include <QTreeWidget>
-#include "include/function/ifunctionregistrator.h"
+#include "include/function/IFunctionRegistrator.h"
 
 class FunctionWidget : public QWidget
 {

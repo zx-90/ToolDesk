@@ -17,21 +17,24 @@
  *
  */
 
-#ifndef FUNCTIONITEM_H
-#define FUNCTIONITEM_H
+#include "IDataViewer.h"
 
-#include <QTreeWidgetItem>
-#include "include/function/ifunctionregistrator.h"
+namespace DeskGui {
 
-class FunctionItem : public QTreeWidgetItem
+IDataViewer::IDataViewer(const DeskData::IData* data, QWidget* parent) :
+    QWidget(parent), _data(data)
 {
-public:
-    FunctionItem(DeskGui::IFunctionRegistrator *registrator);
 
-    DeskGui::IFunctionRegistrator *getRegistrator();
+}
 
-private:
-    DeskGui::IFunctionRegistrator *_registrator;
-};
+IDataViewer::~IDataViewer()
+{
 
-#endif // FUNCTIONITEM_H
+}
+
+void IDataViewer::onChangeData(const DeskData::IData *)
+{
+
+}
+
+}

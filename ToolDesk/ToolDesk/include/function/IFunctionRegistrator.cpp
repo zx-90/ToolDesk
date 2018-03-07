@@ -37,18 +37,19 @@
  *
  */
 
-#include "ifunction.h"
+#include "IFunctionRegistrator.h"
 
-namespace  DeskFunction {
+namespace DeskGui {
 
-IFunction::IFunction(QObject *parent) : QObject(parent)
+IFunctionRegistrator::IFunctionRegistrator()
 {
 
 }
 
-IFunction::~IFunction()
+IFunctionRegistrator::~IFunctionRegistrator()
 {
 
 }
 
-}
+} // namespace DeskGui
+

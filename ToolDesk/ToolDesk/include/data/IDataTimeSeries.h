@@ -41,13 +41,13 @@
 #define IDATATIMESERIES_H
 
 #include "IData.h"
-#include "IDataDimention.h"
+#include "IDimention.h"
 
 namespace DeskData {
 
 class ITimeSeries : public IData {
-protected:
 
+protected:
     ITimeSeries() {}
     virtual ~ITimeSeries() {}
 
@@ -55,24 +55,35 @@ public:
 
     virtual ITimeSeries* clone() const = 0;
 
+    virtual void setSize(Size size) = 0;
+    virtual Size getSize() const = 0;
+
+    // X
     virtual void setXDimention(const IDimention* dimention) = 0;
     virtual IDimention* getXDimention() = 0;
     virtual const IDimention* getXDimention() const = 0;
-    virtual void setXOffset(const Double xOffset) = 0;
+    // x[i] = offset + i * quant
+    virtual void setXOffset(const Double xOffset, const Double xQuant) = 0;
+    virtual bool isXOffset() const = 0;
     virtual Double getXOffset() const = 0;
-    virtual void setXQuant(const Double xQuant) = 0;
     virtual Double getXQuant() const = 0;
+    // x[i] = array[i]
+    virtual void setArrayX() = 0;
+    virtual bool isArrayX() const = 0;
+    virtual Double* getArrayX() = 0;
+    virtual const Double* getArrayX() const = 0;
 
+    // Y
     virtual void setYDimention(const IDimention* dimention) = 0;
     virtual IDimention* getYDimention() = 0;
     virtual const IDimention* getYDimention() const = 0;
+    // y[i] = offset
     virtual void setYOffset(const Double yOffset) = 0;
+    virtual bool isYOffset() const = 0;
     virtual Double getYOffset() const = 0;
-    virtual void setYQuant(const Double yQuant) = 0;
-    virtual Double getYQuant() const = 0;
-
-    virtual void setSize(Size size) = 0;
-    virtual Size getSize() const = 0;
+    // y[i] = array[i]
+    virtual void setArrayY() = 0;
+    virtual bool isArrayY() const = 0;
     virtual Double* getArrayY() = 0;
     virtual const Double* getArrayY() const = 0;
 

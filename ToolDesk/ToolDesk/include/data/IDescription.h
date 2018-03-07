@@ -17,58 +17,25 @@
  *
  */
 
-#include "container.h"
+#ifndef IDESCRIPTION_H
+#define IDESCRIPTION_H
 
 namespace DeskData {
 
-Container::Container()
-{
+class IDescription {
+
+protected:
+    IDescription() {}
+    ~IDescription() {}
+
+public:
+    virtual void release() = 0;
+
+    virtual const QString getDescription() const = 0;
+    virtual void setDescription(const QString description) = 0;
+
+};
 
 }
 
-Container::~Container()
-{
-
-}
-
-void Container::release()
-{
-    delete this;
-}
-
-Size Container::getSize() const
-{
-    return _container.size();
-}
-
-void Container::addData(IData *data)
-{
-    _container.push_back(data);
-}
-
-void Container::eraseData(Size number)
-{
-    if (number >= _container.size()) {
-        return;
-    }
-    _container.erase(_container.begin() + number);
-}
-
-IData *Container::getData(Size number)
-{
-    if (number >= _container.size()) {
-        return nullptr;
-    }
-    return _container.at(number);
-}
-
-const IData *Container::getData(Size number) const
-{
-    if (number >= _container.size()) {
-        return nullptr;
-    }
-    return _container.at(number);
-}
-
-} // namespace DeskData
-
+#endif // IDESCRIPTION_H

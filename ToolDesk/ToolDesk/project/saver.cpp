@@ -72,7 +72,7 @@ Project *Saver::load(QString dir)
     file.open(QIODevice::ReadOnly);
     Size version = loadSize(file);
     if (version != VERSION) {
-        return NULL;
+        return nullptr;
     }
     Size id = loadSize(file);
     Project* project = new Project(id);
@@ -115,73 +115,39 @@ void Saver::saveData(QFile& file, const IData* data)
     save(file, data->getDescription());
 
     switch (data->getType()) {
-    /*case DATATYPE_DESCRIPTION: {
-        break;
-    }
-    case DATATYPE_INT: {
-        IInt* dataInt = (IInt*) data;
-        save(file, dataInt->getValue());
-        break;
-    }
-    case DATATYPE_DOUBLE: {
-        IDouble* dataDouble = (IDouble*) data;
-        save(file, dataDouble->getValue());
-        break;
-    }*/
-    case DATATYPE_DIMENTION: {
-        IDimention* dataDimention = (IDimention*) data;
-        save(file, dataDimention->getSize());
-        for (Size i = 0; i < dataDimention->getSize(); i++) {
-            save(file, dataDimention->getDimentionPrefix(i));
-            save(file, dataDimention->getDimentionType(i));
-            save(file, dataDimention->getDimentionPower(i));
-        }
-        break;
-    }
     case DATATYPE_PHYSICAL: {
         IPhysical* dataPhysical = (IPhysical*) data;
-        saveData(file, dataPhysical->getDimention());
+        save(file, dataPhysical->getDimention());
         save(file, dataPhysical->getValue());
         break;
     }
     case DATATYPE_TIMESERIES: {
         ITimeSeries* dataTimeSeries = (ITimeSeries*) data;
-        saveData(file, dataTimeSeries->getXDimention());
-        save(file, dataTimeSeries->getXOffset());
-        save(file, dataTimeSeries->getXQuant());
-        saveData(file, dataTimeSeries->getYDimention());
-        save(file, dataTimeSeries->getYOffset());
-        save(file, dataTimeSeries->getYQuant());
-        save(file, dataTimeSeries->getSize());
-        save(file, dataTimeSeries->getArrayY(), dataTimeSeries->getSize());
-        break;
-    }
-    case DATATYPE_NON_EQUDISTANT_TIMESERIES: {
-        INonEqudistantTimeSeries* dataTimeSeries = (INonEqudistantTimeSeries*) data;
-        saveData(file, dataTimeSeries->getXDimention());
-        save(file, dataTimeSeries->getXOffset());
-        save(file, dataTimeSeries->getXQuant());
-        saveData(file, dataTimeSeries->getYDimention());
-        save(file, dataTimeSeries->getYOffset());
-        save(file, dataTimeSeries->getYQuant());
-        save(file, dataTimeSeries->getSize());
-        save(file, dataTimeSeries->getArrayX(), dataTimeSeries->getSize());
-        save(file, dataTimeSeries->getArrayY(), dataTimeSeries->getSize());
-        break;
-    }
-    case DATATYPE_PULSE_RANDOM_SEQUENCE: {
-        IPulseRandomSequence* dataTimeSeries = (IPulseRandomSequence*) data;
-        saveData(file, dataTimeSeries->getXDimention());
-        save(file, dataTimeSeries->getXOffset());
-        save(file, dataTimeSeries->getXQuant());
-        saveData(file, dataTimeSeries->getYDimention());
-        save(file, dataTimeSeries->getYOffset());
-        save(file, dataTimeSeries->getYQuant());
-        save(file, dataTimeSeries->getSize());
-        save(file, dataTimeSeries->getArrayX(), dataTimeSeries->getSize());
-        break;
-    }
 
+        Size size = dataTimeSeries->getSize();
+        save(file, size);
+
+        save(file, dataTimeSeries->getXDimention());
+        save(file, dataTimeSeries->isXOffset());
+        save(file, dataTimeSeries->getXOffset());
+        save(file, dataTimeSeries->getXQuant());
+        bool isArrayX = dataTimeSeries->isArrayX();
+        save(file, isArrayX);
+        if (isArrayX) {
+            save(file, dataTimeSeries->getArrayX(), size);
+        }
+
+        save(file, dataTimeSeries->getYDimention());
+        save(file, dataTimeSeries->isYOffset());
+        save(file, dataTimeSeries->getYOffset());
+        bool isArrayY = dataTimeSeries->isArrayY();
+        save(file, isArrayY);
+        if (isArrayY) {
+            save(file, dataTimeSeries->getArrayY(), size);
+        }
+
+        break;
+    }
     default: {
         // TODO: Check for errors.
     }
@@ -195,6 +161,11 @@ void Saver::saveContainer(QFile &file, const IContainer *container)
         save(file, container->getData(j)->getId());
         //save(file, container->getDescription(j));
     }
+}
+
+void Saver::save(QFile &file, bool data)
+{
+    save(file, (Int)data);
 }
 
 void Saver::save(QFile &file, Int data)
@@ -212,11 +183,12 @@ void Saver::save(QFile &file, Double data)
     file.write((char*) &data, sizeof(data));
 }
 
-void Saver::save(QFile &file, const Char *data)
+void Saver::save(QFile &file, const QString data)
 {
-    Size len = wcslen(data);
+    QByteArray array = data.toUtf8();
+    Size len = array.length();
     file.write((char*) &len, sizeof(len));
-    file.write((char*) data, sizeof(*data) * len);
+    file.write(array);
 }
 
 void Saver::save(QFile &file, const Double *data, Size size)
@@ -224,40 +196,24 @@ void Saver::save(QFile &file, const Double *data, Size size)
     file.write((char*) data, sizeof(*data) * size);
 }
 
+void Saver::save(QFile &file, const IDimention* data)
+{
+    save(file, data->getSize());
+    for (Size i = 0; i < data->getSize(); i++) {
+        save(file, data->getDimentionPrefix(i));
+        save(file, data->getDimentionType(i));
+        save(file, data->getDimentionPower(i));
+    }
+}
+
 IData* Saver::loadData(const IFactory* factory, QFile &file)
 {
     Size type = loadSize(file);
     switch(type) {
-    /*case DATATYPE_DESCRIPTION: {
-        IDescription* data = (IDescription*)factory->createData(DATATYPE_DESCRIPTION);
-        loadDataHeader(file, data);
-        return data;
-    }
-    case DATATYPE_INT: {
-        IInt* data = (IInt*)factory->createData(DATATYPE_INT);
-        loadDataHeader(file, data);
-        data->setValue(loadInt(file));
-        return data;
-    }
-    case DATATYPE_DOUBLE: {
-        IDouble* data = (IDouble*)factory->createData(DATATYPE_DOUBLE);
-        loadDataHeader(file, data);
-        data->setValue(loadDouble(file));
-        return data;
-    }*/
-    case DATATYPE_DIMENTION: {
-        IDimention* data = (IDimention*)factory->createData(DATATYPE_DIMENTION);
-        loadDataHeader(file, data);
-        Size size = loadSize(file);
-        for (Size i = 0; i < size; i++) {
-            data->addDimention(loadSize(file),loadInt(file),loadInt(file));
-        }
-        return data;
-    }
     case DATATYPE_PHYSICAL: {
         IPhysical* data = (IPhysical*)factory->createData(DATATYPE_PHYSICAL);
         loadDataHeader(file, data);
-        IDimention* dimention = (IDimention*)loadData(factory,file);
+        IDimention* dimention = loadDataDimention(file, factory);
         data->setDimention(dimention);
         dimention->release();
         data->setValue(loadDouble(file));
@@ -266,57 +222,39 @@ IData* Saver::loadData(const IFactory* factory, QFile &file)
     case DATATYPE_TIMESERIES: {
         ITimeSeries* data = (ITimeSeries*)factory->createData(DATATYPE_TIMESERIES);
         loadDataHeader(file, data);
-        IDimention* dimentionX = (IDimention*)loadData(factory,file);
+
+        Size size = loadSize(file);
+        data->setSize(size);
+
+        IDimention* dimentionX = loadDataDimention(file, factory);
         data->setXDimention(dimentionX);
         dimentionX->release();
-        data->setXOffset(loadDouble(file));
-        data->setXQuant(loadDouble(file));
-        IDimention* dimentionY = (IDimention*)loadData(factory,file);
+        loadBool(file); // isXOffset
+        data->setXOffset(loadDouble(file), loadDouble(file));
+        bool isArrayX = loadBool(file);
+        if (isArrayX) {
+            loadDoubleArray(file, data->getArrayX(), size);
+        }
+
+        IDimention* dimentionY = loadDataDimention(file, factory);
         data->setYDimention(dimentionY);
         dimentionY->release();
+        loadBool(file); // isYOffset
         data->setYOffset(loadDouble(file));
-        data->setYQuant(loadDouble(file));
-        data->setSize(loadSize(file));
-        loadDoubleArray(file,data->getArrayY(),data->getSize());
+        bool isArrayY = loadBool(file);
+        if (isArrayY) {
+            loadDoubleArray(file, data->getArrayY(), size);
+        }
+
         return data;
     }
-    case DATATYPE_NON_EQUDISTANT_TIMESERIES: {
-        INonEqudistantTimeSeries* data = (INonEqudistantTimeSeries*)factory->createData(DATATYPE_NON_EQUDISTANT_TIMESERIES);
-        loadDataHeader(file, data);
-        IDimention* dimentionX = (IDimention*)loadData(factory,file);
-        data->setXDimention(dimentionX);
-        dimentionX->release();
-        data->setXOffset(loadDouble(file));
-        data->setXQuant(loadDouble(file));
-        IDimention* dimentionY = (IDimention*)loadData(factory,file);
-        data->setYDimention(dimentionY);
-        dimentionY->release();
-        data->setYOffset(loadDouble(file));
-        data->setYQuant(loadDouble(file));
-        data->setSize(loadSize(file));
-        loadDoubleArray(file,data->getArrayX(),data->getSize());
-        loadDoubleArray(file,data->getArrayY(),data->getSize());
-        return data;
+    default: return nullptr;
     }
-    case DATATYPE_PULSE_RANDOM_SEQUENCE: {
-        IPulseRandomSequence* data = (IPulseRandomSequence*)factory->createData(DATATYPE_PULSE_RANDOM_SEQUENCE);
-        loadDataHeader(file, data);
-        IDimention* dimentionX = (IDimention*)loadData(factory,file);
-        data->setXDimention(dimentionX);
-        dimentionX->release();
-        data->setXOffset(loadDouble(file));
-        data->setXQuant(loadDouble(file));
-        IDimention* dimentionY = (IDimention*)loadData(factory,file);
-        data->setYDimention(dimentionY);
-        dimentionY->release();
-        data->setYOffset(loadDouble(file));
-        data->setYQuant(loadDouble(file));
-        data->setSize(loadSize(file));
-        loadDoubleArray(file,data->getArrayX(),data->getSize());
-        return data;
-    }
-    default: return NULL;
-    }
+}
+
+bool Saver::loadBool(QFile &file)
+{
+    return loadInt(file);
 }
 
 Size Saver::loadSize(QFile &file)
@@ -340,9 +278,12 @@ Double Saver::loadDouble(QFile &file)
     return data;
 }
 
-void Saver::loadString(QFile &file, Char *data, Size len)
+QString Saver::loadString(QFile &file, Size len)
 {
+    char data[len + 1];
     file.read((char*) data, sizeof(*data) * len);
+    data[len] = 0;
+    return QString::fromUtf8(data);
 }
 
 void Saver::loadDoubleArray(QFile &file, Double *data, Size len)
@@ -355,21 +296,26 @@ void Saver::loadDataHeader(QFile &file, IData *data)
     Size id = loadSize(file);
     data->setId(id);
     Size descSize = loadSize(file);
-    Char* desc = new Char[descSize];
-    loadString(file, desc, descSize);
+    QString desc = loadString(file, descSize);
     data->setDescription(desc);
-    delete desc;
+}
+
+IDimention* Saver::loadDataDimention(QFile &file, const IFactory* factory)
+{
+    IDimention* data = factory->createDimention();
+    Size size = loadSize(file);
+    for (Size i = 0; i < size; i++) {
+        data->addDimention(loadSize(file),loadInt(file),loadInt(file));
+    }
+    return data;
 }
 
 ISummation *Saver::loadFunc(Project *project, const IFactory *factory, QFile &file)
 {
     ISummation* result = factory->createSummation();
     Size descSize = loadSize(file);
-    Char* desc = new Char[descSize + 1];
-    loadString(file, desc, descSize);
-    desc[descSize] = 0;
+    QString desc = loadString(file, descSize);
     result->setDescription(desc);
-    delete desc;
     loadContainer(project, (IContainer*)result->getInContainer(), file);
     loadContainer(project, (IContainer*)result->getOutContainer(), file);
 

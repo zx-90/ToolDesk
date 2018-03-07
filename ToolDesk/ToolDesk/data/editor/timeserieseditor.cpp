@@ -17,24 +17,9 @@
  *
  */
 
-#ifndef DESKGUI_CREATEPHYSICALREGISTRATOR_H
-#define DESKGUI_CREATEPHYSICALREGISTRATOR_H
+#include "timeserieseditor.h"
 
-#include "include/function/IFunctionRegistrator.h"
-
-namespace DeskGui {
-
-class CreatePhysicalRegistrator : public IFunctionRegistrator
+/*TimeSeriesEditor::TimeSeriesEditor()
 {
-public:
-    CreatePhysicalRegistrator();
-    virtual ~CreatePhysicalRegistrator();
 
-    virtual QString getName() const;
-    virtual IFunctionDialog* getDialog(DeskData::IProject* project, QWidget* parent = 0) const;
-
-};
-
-} // namespace DeskGui
-
-#endif // DESKGUI_CREATEPHYSICALREGISTRATOR_H
+}*/

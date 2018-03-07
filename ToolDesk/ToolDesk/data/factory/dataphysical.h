@@ -36,8 +36,8 @@ public:
     virtual Size getType() const;
     virtual void setId(Size id);
     virtual Size getId() const;
-    virtual const Char* getDescription() const;
-    virtual void setDescription(const Char* description);
+    virtual const QString getDescription() const;
+    virtual void setDescription(const QString description);
 
     virtual IPhysical* clone() const;
 
@@ -51,7 +51,7 @@ public:
 
 private:
     Size _id;
-    std::wstring _description;
+    QString _description;
 
     Double _value;
     IDimention* _dimention;

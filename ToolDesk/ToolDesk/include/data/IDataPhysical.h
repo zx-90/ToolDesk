@@ -41,11 +41,12 @@
 #define IDATASI_H
 
 #include "IData.h"
-#include "IDataDimention.h"
+#include "IDimention.h"
 
 namespace DeskData {
 
 class IPhysical : public IData {
+
 protected:
     IPhysical() {}
     virtual ~IPhysical() {}

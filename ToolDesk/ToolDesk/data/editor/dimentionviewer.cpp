@@ -23,12 +23,20 @@
 
 namespace DeskGui {
 
-DimentionViewer::DimentionViewer(const DeskData::IData *data, QWidget *parent) :
-    IDataViewer(data, parent)
+DimentionViewer::DimentionViewer(const DeskData::IDimention *data, QWidget *parent) :
+    QWidget(parent),
+    _data(data)
 {
+    setContentsMargins(0, 0, 0, 0);
 
     QVBoxLayout* layout = new QVBoxLayout(this);
+    layout->setMargin(0);
+    layout->setContentsMargins(0, 0, 0, 0);
+
     _label = new QLabel(this);
+    _label->setMargin(0);
+    _label->setContentsMargins(0,0,0,0);
+    _label->setIndent(0);
     _label->setText(DeskData::dimentionToString(data));
     layout->addWidget(_label);
 }
@@ -38,13 +46,13 @@ DimentionViewer::~DimentionViewer()
 
 }
 
-void DimentionViewer::onChangeData(const DeskData::IData *data)
+void DimentionViewer::onDataChanged(DeskData::IDimention *data)
 {
-    if (data != NULL) {
-        _data = data;
+    _data = data;
+    if (_data) {
+        QString res = dimentionToString(_data);
+        _label->setText(res);
     }
-    QString res = dimentionToString(_data);
-    _label->setText(res);
 }
 
 } // namespace DeskGui

@@ -41,23 +41,12 @@
 #define IDATA_H
 
 #include "DataTypes.h"
+#include "IDescription.h"
 
 namespace DeskData {
 
-class IDescription {
-protected:
-    IDescription() {}
-    ~IDescription() {}
-
-public:
-    virtual void release() = 0;
-
-    virtual const Char* getDescription() const = 0;
-    virtual void setDescription(const Char* description) = 0;
-
-};
-
 class IData : public IDescription {
+
 protected:
     IData() {}
     virtual ~IData() {}

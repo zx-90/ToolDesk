@@ -22,9 +22,12 @@
 
 namespace DeskData {
 
-DataPhysical::DataPhysical()
+DataPhysical::DataPhysical() :
+    _id(-1),
+    _description(""),
+    _value(0.0),
+    _dimention(new DataDimention())
 {
-    _dimention = new DataDimention();
 }
 
 DataPhysical::~DataPhysical()
@@ -52,12 +55,12 @@ Size DataPhysical::getId() const
     return _id;
 }
 
-const Char *DataPhysical::getDescription() const
+const QString DataPhysical::getDescription() const
 {
-    return _description.c_str();
+    return _description;
 }
 
-void DataPhysical::setDescription(const Char *description)
+void DataPhysical::setDescription(const QString description)
 {
     _description = description;
 }
@@ -89,7 +92,7 @@ Double DataPhysical::getValue() const
 
 void DataPhysical::setDimention(const IDimention *dimention)
 {
-    if (dimention == NULL) {
+    if (!dimention) {
         return;
     }
     if (dimention == _dimention) {

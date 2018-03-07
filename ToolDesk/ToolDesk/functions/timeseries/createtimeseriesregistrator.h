@@ -20,7 +20,7 @@
 #ifndef CREATETIMESERIES_H
 #define CREATETIMESERIES_H
 
-#include "include/function/ifunctionregistrator.h"
+#include "include/function/IFunctionRegistrator.h"
 #include "createtimeseriesdialog.h"
 
 class CreateTimeSeriesRegistrator : public DeskGui::IFunctionRegistrator

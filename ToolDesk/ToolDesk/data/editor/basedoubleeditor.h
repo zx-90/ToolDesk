@@ -21,8 +21,8 @@
 #define DESKGUI_BASEDOUBLEEDITOR_H
 
 #include <QWidget>
-#include <QLineEdit>
 #include <QLabel>
+#include "desk/core/shiftedlineedit.h"
 #include "include/data/DataList.h"
 
 namespace DeskGui {
@@ -35,6 +35,8 @@ public:
     BaseDoubleEditor(QWidget* parent = 0);
     ~BaseDoubleEditor();
 
+    void setDouble(DeskData::Double d);
+
 signals:
     void dataChanged(QString value);
     void dataChangedDouble(double value);
@@ -42,12 +44,17 @@ signals:
 public slots:
     void redraw();
 
-private:
-    QLineEdit* _base;
-    QLabel* _tenBase;
-    QLineEdit* _power;
+private slots:
+    void resizeToContent();
+    void onBaseReturnPressed();
+    void onPowerReturnPressed();
 
-    DeskData::Double getDouble(QString string,bool& isOk);
+private:
+    ShiftedLineEdit* _base;
+    QLabel* _tenBase;
+    ShiftedLineEdit* _power;
+
+    DeskData::Double getDouble(QString string, bool& isOk);
 
 };
 

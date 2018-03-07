@@ -20,26 +20,31 @@
 #ifndef DESCRIPTIONEDITOR_H
 #define DESCRIPTIONEDITOR_H
 
-#include <QLineEdit>
+#include "desk/core/shiftedlineedit.h"
 #include "include/widget/IDataEditor.h"
 
 namespace DeskGui {
 
-class DescriptionEditor : public DeskGui::IDataEditor
+class DescriptionEditor : public QWidget
 {
     Q_OBJECT
 
 public:
-    DescriptionEditor(DeskData::IData* data, QWidget* parent = 0);
+    DescriptionEditor(DeskData::IDescription* description, QWidget* parent = 0);
+
+    void setDescription(DeskData::IDescription* description);
 
 signals:
-    void dataChanged(DeskData::IData* data);
+    void dataChanged(DeskData::IDescription* description);
 
 private slots:
     void onTextChanged(const QString &text);
 
 private:
-    QLineEdit* _descriptionEditor;
+    DeskData::IDescription* _description;
+
+    ShiftedLineEdit* _descriptionEditor;
+
 
 };
 

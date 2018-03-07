@@ -24,6 +24,7 @@ namespace DeskData {
 
 Summation::Summation()
 {
+    _description = "";
     _inContainer = new Container();
     _outContainer = new Container();
     _registerContainer = new Container();
@@ -41,14 +42,14 @@ void Summation::release()
     delete this;
 }
 
-void Summation::setDescription(const Char *description)
+void Summation::setDescription(const QString description)
 {
     _description = description;
 }
 
-const Char *Summation::getDescription() const
+const QString Summation::getDescription() const
 {
-    return _description.c_str();
+    return _description;
 }
 
 void Summation::setInData(const IData *data)

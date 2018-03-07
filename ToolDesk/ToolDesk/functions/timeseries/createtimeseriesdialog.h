@@ -22,6 +22,15 @@
 
 #include "include/function/IFunctionDialog.h"
 
+#include <QVBoxLayout>
+#include <QSpinBox>
+#include <QGroupBox>
+#include <QRadioButton>
+#include "data/editor/descriptioneditor.h"
+#include "data/editor/dimentioneditor.h"
+#include "data/editor/basedoubleeditor.h"
+#include "data/editor/timeseriesviewer.h"
+
 class CreateTimeSeriesDialog : public DeskGui::IFunctionDialog
 {
 public:
@@ -30,6 +39,28 @@ public:
 
 public slots:
     void runFunction();
+
+private:
+    QVBoxLayout* _layout;
+
+    DeskGui::DescriptionEditor* _description;
+
+    QSpinBox* _size;
+
+    DeskGui::DimentionEditor* _dimentionX;
+    QGroupBox* _typeX;
+    QRadioButton* _isOffsetX;
+    QRadioButton* _isArrayX;
+    DeskGui::BaseDoubleEditor* _offsetX;
+    DeskGui::BaseDoubleEditor* _quantX;
+
+    DeskGui::DimentionEditor* _dimentionY;
+    QGroupBox* _typeY;
+    QRadioButton* _isOffsetY;
+    QRadioButton* _isArrayY;
+    DeskGui::BaseDoubleEditor* _offsetY;
+
+    TimeSeriesViewer* _chart;
 
 };
 

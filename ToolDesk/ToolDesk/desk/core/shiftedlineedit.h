@@ -17,24 +17,23 @@
  *
  */
 
-#ifndef DESKGUI_CREATEPHYSICALREGISTRATOR_H
-#define DESKGUI_CREATEPHYSICALREGISTRATOR_H
+#ifndef SHIFTEDLINEEDIT_H
+#define SHIFTEDLINEEDIT_H
 
-#include "include/function/IFunctionRegistrator.h"
+#include <QLineEdit>
 
-namespace DeskGui {
-
-class CreatePhysicalRegistrator : public IFunctionRegistrator
+class ShiftedLineEdit : public QLineEdit
 {
+    Q_OBJECT
 public:
-    CreatePhysicalRegistrator();
-    virtual ~CreatePhysicalRegistrator();
+    ShiftedLineEdit(QWidget* parent = nullptr, bool shiftLeft = true, bool shiftRight = true);
 
-    virtual QString getName() const;
-    virtual IFunctionDialog* getDialog(DeskData::IProject* project, QWidget* parent = 0) const;
+protected:
+    bool _shiftLeft;
+    bool _shiftRight;
 
+    virtual void keyPressEvent(QKeyEvent *event) override;
+    virtual void focusInEvent(QFocusEvent *event) override;
 };
 
-} // namespace DeskGui
-
-#endif // DESKGUI_CREATEPHYSICALREGISTRATOR_H
+#endif // SHIFTEDLINEEDIT_H

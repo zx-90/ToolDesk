@@ -19,75 +19,28 @@
 
 #include "dimentioneditor.h"
 #include <QVBoxLayout>
+#include <QDialog>
+#include <QLabel>
+#include <QSpinBox>
+#include "desk/core/borderlayout.h"
 
 namespace DeskGui {
 
-DimentionEditor::DimentionEditor(DeskData::IData *data, QWidget *parent) :
-    IDataEditor(data, parent)
+DimentionEditor::DimentionEditor(DeskData::IDimention *data, QWidget *parent) :
+    QWidget(parent),
+    _data(data),
+    _dialog(nullptr)
 {
     QVBoxLayout* layout = new QVBoxLayout(this);
+    layout->setMargin(0);
 
-    _dimentionUnitTree = new QTreeWidget(this);
+    _button = new QPushButton(this);
+    setDimention(data);
+    layout->addWidget(_button);
     QWidget::connect(
-                _dimentionUnitTree,SIGNAL(currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)),
-                this,SLOT(redraw()));
-    QWidget::connect(
-                _dimentionUnitTree,SIGNAL(currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)),
-                this,SLOT(redraw()));
-    QStringList headerLabels;
-    headerLabels.push_back("prefix");
-    headerLabels.push_back("dimention");
-    headerLabels.push_back("pow");
-    _dimentionUnitTree->setHeaderLabels(headerLabels);
-    layout->addWidget(_dimentionUnitTree);
-
-    _dimentionActions = new QWidget(this);
-    layout->addWidget(_dimentionActions);
-    QHBoxLayout* dimentionActionsLayout = new QHBoxLayout(_dimentionActions);
-    _dimentionUnitDelete = new QPushButton("-",_dimentionActions);
-    _dimentionUnitDelete->setEnabled(false);
-    QWidget::connect(_dimentionUnitDelete,SIGNAL(clicked()),this,SLOT(onDeleteDimention()));
-    dimentionActionsLayout->addWidget(_dimentionUnitDelete);
-    _dimentionUnitUp = new QPushButton("Up",_dimentionActions);
-    _dimentionUnitUp->setEnabled(false);
-    QWidget::connect(_dimentionUnitUp,SIGNAL(clicked()),this,SLOT(onMoveUpDimention()));
-    dimentionActionsLayout->addWidget(_dimentionUnitUp);
-    _dimentionUnitDown = new QPushButton("Down",_dimentionActions);
-    _dimentionUnitDown->setEnabled(false);
-    QWidget::connect(_dimentionUnitDown,SIGNAL(clicked()),this,SLOT(onMoveDownDimention()));
-    dimentionActionsLayout->addWidget(_dimentionUnitDown);
-
-    _dimentionAdd = new QWidget(this);
-    layout->addWidget(_dimentionAdd);
-    QHBoxLayout* dimentionLayout = new QHBoxLayout(_dimentionAdd);
-    _dimentionPrefixList = new QComboBox(_dimentionAdd);
-    dimentionLayout->addWidget(_dimentionPrefixList);
-    for (DeskData::Size i = 0; i < DeskData::METRIC_PREFIXES_SIZE; i++) {
-        _dimentionPrefixList->addItem(QString::fromWCharArray(DeskData::METRIC_PREFIXES[i].name));
-    }
-    _dimentionUnitList = new QComboBox(_dimentionAdd);
-    dimentionLayout->addWidget(_dimentionUnitList);
-    for (DeskData::Size i = 0; i < DeskData::METRIX_UNITS_SIZE; i++) {
-        _dimentionUnitList->addItem(
-                    QString::fromWCharArray(DeskData::METRIX_UNITS[i].name) + "\t" +
-                    QString::fromWCharArray(DeskData::METRIX_UNITS[i].symbol));
-    }
-    _dimentionPowerList = new QComboBox(_dimentionAdd);
-    dimentionLayout->addWidget(_dimentionPowerList);
-    _dimentionPowerList->addItem("4");
-    _dimentionPowerList->addItem("3");
-    _dimentionPowerList->addItem("2");
-    _dimentionPowerList->addItem("1");
-    _dimentionPowerList->addItem("-1");
-    _dimentionPowerList->addItem("-2");
-    _dimentionPowerList->addItem("-3");
-    _dimentionPowerList->addItem("-4");
-    _dimentionPowerList->setCurrentIndex(3);
-    _dimentionUnitAdd = new QPushButton("+",_dimentionActions);
-    dimentionLayout->addWidget(_dimentionUnitAdd);
-    QWidget::connect(_dimentionUnitAdd,SIGNAL(clicked()),this,SLOT(onAddDimention()));
-
-    redraw();
+                _button, SIGNAL(clicked()),
+                this, SLOT(onClick())
+                );
 }
 
 DimentionEditor::~DimentionEditor()
@@ -95,99 +48,123 @@ DimentionEditor::~DimentionEditor()
 
 }
 
-void DimentionEditor::onAddDimention()
+void DimentionEditor::setDimention(DeskData::IDimention *data)
 {
-    QTreeWidgetItem* item = new QTreeWidgetItem();
-    item->setData(0,Qt::UserRole,QVariant(_dimentionPrefixList->currentIndex()));
-    item->setText(0,_dimentionPrefixList->currentText());
-    item->setData(1,Qt::UserRole,QVariant(_dimentionUnitList->currentIndex()));
-    item->setText(1,_dimentionUnitList->currentText());
-    int power = 4 - _dimentionPowerList->currentIndex();
-    if (power < 1) power--;
-    item->setData(2,Qt::UserRole,QVariant(power));
-    item->setText(2,_dimentionPowerList->currentText());
-    _dimentionUnitTree->addTopLevelItem(item);
-    _dimentionUnitTree->setCurrentItem(item);
-    redraw();
-}
-
-void DimentionEditor::onDeleteDimention()
-{
-    QTreeWidgetItem* item = _dimentionUnitTree->currentItem();
-    if (item == NULL) {
-        return;
-    }
-    delete item;
-    redraw();
-    redraw();
-}
-
-void DimentionEditor::onMoveUpDimention()
-{
-    QTreeWidgetItem* current = _dimentionUnitTree->currentItem();
-    int itemIndex = _dimentionUnitTree->indexOfTopLevelItem(current);
-    if (itemIndex <= 0) {
-        redraw();
-        return;
-    }
-    _dimentionUnitTree->takeTopLevelItem(itemIndex);
-    _dimentionUnitTree->insertTopLevelItem(itemIndex - 1, current);
-    _dimentionUnitTree->setCurrentItem(current);
-    redraw();
-}
-
-void DimentionEditor::onMoveDownDimention()
-{
-    QTreeWidgetItem* current = _dimentionUnitTree->currentItem();
-    int itemIndex = _dimentionUnitTree->indexOfTopLevelItem(current);
-    if (itemIndex >= _dimentionUnitTree->topLevelItemCount() - 1) {
-        redraw();
-        return;
-    }
-    _dimentionUnitTree->takeTopLevelItem(itemIndex);
-    _dimentionUnitTree->insertTopLevelItem(itemIndex + 1, current);
-    _dimentionUnitTree->setCurrentItem(current);
-    redraw();
-}
-
-void DimentionEditor::redraw()
-{
-    if (_dimentionUnitTree->currentItem() == NULL) {
-        _dimentionUnitDelete->setEnabled(false);
-        _dimentionUnitUp->setEnabled(false);
-        _dimentionUnitDown->setEnabled(false);
+    _data = data;
+    if (data) {
+        _button->setEnabled(true);
+        _button->setText("[" + DeskData::dimentionToString(data) + "]");
     } else {
-        _dimentionUnitDelete->setEnabled(true);
-        int row = _dimentionUnitTree->currentIndex().row();
-        if (row == 0) {
-            _dimentionUnitUp->setEnabled(false);
-        } else {
-            _dimentionUnitUp->setEnabled(true);
-        }
-        if (row < _dimentionUnitTree->model()->rowCount() - 1) {
-            _dimentionUnitDown->setEnabled(true);
-        } else {
-            _dimentionUnitDown->setEnabled(false);
-        }
+        _button->setEnabled(false);
+        _button->setText("[]");
     }
-    if (_dimentionUnitTree->topLevelItemCount() < (int)DeskData::DIMENTION_MAX_SIZE) {
-        _dimentionUnitAdd->setEnabled(true);
-    } else {
-        _dimentionUnitAdd->setEnabled(false);
+}
+
+void DimentionEditor::onClick()
+{
+    if (_dialog) {
+        _dialog->close();
+    }
+    _dims.clear();
+
+    _dialog = new QDialog(this);
+    BorderLayout* layout = new BorderLayout(_dialog);
+    _dialog->setLayout(layout);
+
+    QWidget* okWidget = new QWidget(_dialog);
+    QHBoxLayout* okLayout = new QHBoxLayout(okWidget);
+    okWidget->setLayout(okLayout);
+    layout->addWidget(okWidget, BorderLayout::South);
+
+    QPushButton* okButton = new QPushButton("Set", okWidget);
+    okButton->setMaximumWidth(100);
+    okLayout->addWidget(okButton);
+
+    QWidget* dims = new QWidget(_dialog);
+    QGridLayout* dimsLayout = new QGridLayout(dims);
+    dims->setLayout(dimsLayout);
+    layout->addWidget(dims, BorderLayout::Center);
+
+    for (DeskData::Size i = 1; i < DeskData::METRIX_UNITS_SIZE; ++i) {
+        const DeskData::metricUnit unit = DeskData::METRIX_UNITS[i];
+        Dim* dim = new Dim(unit, dims);
+        if (_data) {
+            DeskData::Size size = _data->getSize();
+            for (DeskData::Size j = 0; j < size; j++) {
+                if (_data->getDimentionType(j) == i) {
+                    dim->setPower(_data->getDimentionPower(j));
+                    dim->setPrefix(_data->getDimentionPrefix(j));
+                }
+            }
+        }
+        QWidget::connect(
+                    dim, SIGNAL(powerChanged(int)),
+                    this, SLOT(onChangeDimStatus())
+                    );
+
+
+        const DeskData::Size ROWS = 15;
+        dimsLayout->addWidget(dim, (i-1) % ROWS, (i-1) / ROWS, 1, 1);
+        _dims.push_back(dim);
+    }
+    onChangeDimStatus();
+
+    QWidget::connect(
+                okButton, SIGNAL(clicked(bool)),
+                this, SLOT(onSetClick())
+                );
+    QWidget::connect(
+                _dialog, SIGNAL(destroyed(QObject*)),
+                this, SLOT(onCloseDialog())
+                );
+
+    _dialog->setModal(true);
+    _dialog->show();
+}
+
+void DimentionEditor::onCloseDialog()
+{
+    _dialog = nullptr;
+    _dims.clear();
+}
+
+void DimentionEditor::onSetClick()
+{
+    if (_data) {
+        _data->clear();
+        for (DeskData::Size i = 0; i < _dims.size(); ++i) {
+            Dim* dim = _dims.at(i);
+            if (dim->getPower() != 0) {
+                _data->addDimention(i+1, dim->getPower(), dim->getPrefix());
+            }
+        }
     }
 
-    DeskData::IDimention* dimention =
-            (DeskData::IDimention*)_data;
-    dimention->clear();
-    for (int i = 0; i < _dimentionUnitTree->topLevelItemCount(); i++) {
-        QTreeWidgetItem* item = _dimentionUnitTree->topLevelItem(i);
-        int prefixIndex = item->data(0,Qt::UserRole).toInt();
-        int valueIndex = item->data(1,Qt::UserRole).toInt();
-        int power = item->data(2,Qt::UserRole).toInt();
-        dimention->addDimention(valueIndex,power,prefixIndex);
+    if (_dialog) {
+        _dialog->close();
     }
 
+    _button->setText("[" + DeskData::dimentionToString(_data) + "]");
     emit dataChanged(_data);
+}
+
+void DimentionEditor::onChangeDimStatus()
+{
+    DeskData::Size activeDims = 0;
+    for (DeskData::Size i = 0; i < _dims.size(); ++i) {
+        Dim* dim = _dims.at(i);
+        if (dim->getPower() != 0) {
+            activeDims++;
+        }
+    }
+    for (DeskData::Size i = 0; i < _dims.size(); ++i) {
+        Dim* dim = _dims.at(i);
+        if (activeDims >= DeskData::DIMENTION_MAX_SIZE) {
+            dim->setActive(dim->getPower() != 0);
+        } else {
+            dim->setActive(true);
+        }
+    }
 }
 
 } // namespace DeskGui

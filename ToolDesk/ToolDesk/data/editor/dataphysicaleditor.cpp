@@ -19,9 +19,10 @@
 
 #include "dataphysicaleditor.h"
 
-#include <QVBoxLayout>
+#include <QFormLayout>
 #include <QHBoxLayout>
-#include "include/data/IDataDimention.h"
+#include "desk/core/borderlayout.h"
+#include "include/data/IDimention.h"
 #include "dimentionviewer.h"
 #include "dimentioneditor.h"
 #include "float.h"
@@ -33,39 +34,70 @@ DataPhysicalEditor::DataPhysicalEditor(DeskData::IData *data, QWidget *parent) :
 {
     _physicalValue = (DeskData::IPhysical*)data;
 
-    setWindowTitle("Create physical value");
-
-    QVBoxLayout* layout = new QVBoxLayout(this);
+    QFormLayout* layout = new QFormLayout(this);
+    layout->setMargin(0);
+    layout->setSpacing(10);
 
     _descriptionEditor = new DescriptionEditor(data, this);
-    layout->addWidget(_descriptionEditor);
+    layout->addRow("Description:", _descriptionEditor);
 
     QWidget* viewWidget = new QWidget(this);
-    layout->addWidget(viewWidget);
-    QHBoxLayout* viewLayout = new QHBoxLayout(viewWidget);
+    //viewWidget->setStyleSheet("border-radius: 3px; border: 1px solid #000000;");
+    QFormLayout* viewLayout = new QFormLayout(viewWidget);
+    viewLayout->setMargin(0);
+    viewLayout->setContentsMargins(0, 0, 0, 0);
+    viewLayout->setHorizontalSpacing(0);
     _doubleViewer = new QLabel(viewWidget);
-    _doubleViewer->setAlignment(Qt::AlignCenter);
-    viewLayout->addWidget(_doubleViewer);
-    _dimentionViewer = new DimentionViewer(_physicalValue->getDimention(),viewWidget);
-    viewLayout->addWidget(_dimentionViewer);
+    _doubleViewer->setAlignment(Qt::AlignLeft | Qt::AlignBaseline);
+    _doubleViewer->setMargin(0);
+    _doubleViewer->setContentsMargins(0,0,0,0);
+    _doubleViewer->setIndent(0);
+    if (_physicalValue) {
+        _dimentionViewer = new DimentionViewer(_physicalValue->getDimention(), viewWidget);
+    } else {
+        _dimentionViewer = new DimentionViewer(nullptr, viewWidget);
+    }
+    viewLayout->addRow(_doubleViewer, _dimentionViewer);
+    layout->addRow("Value:", viewWidget);
 
-    _doubleEditor = new BaseDoubleEditor(this);
-    layout->addWidget(_doubleEditor);
+    QWidget* editors = new QWidget(this);
+    BorderLayout* editorsLayout = new BorderLayout(editors);
+    layout->addWidget(editors);
 
-    _dimentionEditor = new DimentionEditor(_physicalValue->getDimention(),this);
-    layout->addWidget(_dimentionEditor);
+    _doubleEditor = new BaseDoubleEditor(editors);
+    _doubleEditor->setEnabled(false);
+    editorsLayout->addWidget(_doubleEditor, BorderLayout::Center);
+
+    if (_physicalValue) {
+        _dimentionEditor = new DimentionEditor(_physicalValue->getDimention(), editors);
+    } else {
+        _dimentionEditor = new DimentionEditor(nullptr, editors);
+    }
+    editorsLayout->addWidget(_dimentionEditor, BorderLayout::East);
 
     QWidget::connect(
                 _doubleEditor, SIGNAL(dataChanged(QString)),
                 _doubleViewer, SLOT(setText(QString)));
     QWidget::connect(
-                _dimentionEditor, SIGNAL(dataChanged(DeskData::IData*)),
-                _dimentionViewer, SLOT(onChangeData(DeskData::IData*)));
+                _dimentionEditor, SIGNAL(dataChanged(DeskData::IDimention*)),
+                _dimentionViewer, SLOT(onDataChanged(DeskData::IDimention*)));
 
-    connect( _doubleEditor, SIGNAL(dataChangedDouble(double)),
-             this, SLOT(setDouble(double)));
-    connect( _dimentionEditor, SIGNAL(dataChanged(DeskData::IData*)),
-             this, SLOT(setDimention(DeskData::IData*)));
+    QWidget::connect(
+                _doubleEditor, SIGNAL(dataChangedDouble(double)),
+                this, SLOT(setDouble(double)));
+    QWidget::connect(
+                _dimentionEditor, SIGNAL(dataChanged(DeskData::IData*)),
+                this, SLOT(setDimention(DeskData::IData*)));
+
+    QWidget::connect(
+                _descriptionEditor, SIGNAL(dataChanged(DeskData::IDescription*)),
+                this, SLOT(onDataChanged()));
+    QWidget::connect(
+                _doubleEditor, SIGNAL(dataChangedDouble(double)),
+                this, SLOT(onDataChanged()));
+    QWidget::connect(
+                _dimentionEditor, SIGNAL(dataChanged(DeskData::IDimention*)),
+                this, SLOT(onDataChanged()));
 
     _doubleEditor->redraw();
 }
@@ -79,14 +111,41 @@ void DataPhysicalEditor::release()
     delete this;
 }
 
+void DataPhysicalEditor::setData(DeskData::IData *data)
+{
+    _data = data;
+    _physicalValue = (DeskData::IPhysical*)data;
+
+    if (_physicalValue) {
+        _descriptionEditor->setDescription(_physicalValue);
+        _doubleEditor->setEnabled(true);
+        _doubleEditor->setDouble(_physicalValue->getValue());
+        _dimentionEditor->setDimention(_physicalValue->getDimention());
+    } else {
+        _descriptionEditor->setDescription(nullptr);
+        _doubleEditor->setEnabled(false);
+        _doubleEditor->setDouble(0);
+        _dimentionEditor->setDimention(nullptr);
+    }
+}
+
 void DataPhysicalEditor::setDouble(double data)
 {
-    _physicalValue->setValue(data);
+    if (_physicalValue) {
+        _physicalValue->setValue(data);
+    }
 }
 
 void DataPhysicalEditor::setDimention(DeskData::IData *data)
 {
-    _physicalValue->setDimention((DeskData::IDimention*)data);
+    if (_physicalValue) {
+        _physicalValue->setDimention((DeskData::IDimention*)data);
+    }
+}
+
+void DataPhysicalEditor::onDataChanged()
+{
+    emit dataChanged(_physicalValue);
 }
 
 } // namespace DeskDataWidget

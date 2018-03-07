@@ -17,16 +17,42 @@
  *
  */
 
-#include "functionitem.h"
+#ifndef DIM_H
+#define DIM_H
 
-FunctionItem::FunctionItem(DeskGui::IFunctionRegistrator *registrator) :
-    _registrator(registrator)
+#include <QWidget>
+#include "include/data/DataList.h"
+#include <QComboBox>
+#include <QLabel>
+#include <QSpinBox>
+#include <QPushButton>
+
+class Dim : public QWidget
 {
+    Q_OBJECT
+public:
+    explicit Dim(const DeskData::metricUnit& unit, QWidget *parent = 0);
 
-}
+    void setPower(DeskData::Int power);
+    void setPrefix(DeskData::Size prefix);
 
-DeskGui::IFunctionRegistrator *FunctionItem::getRegistrator()
-{
-    return _registrator;
-}
+    DeskData::Int getPower();
+    DeskData::Size getPrefix();
+    void setActive(bool active);
 
+signals:
+    void powerChanged(int power);
+
+public slots:
+    void onChange(int i);
+    void zero();
+
+private:
+    QComboBox* _prefixes;
+    QLabel* _label;
+    QSpinBox* _power;
+    QPushButton* _zeroButton;
+
+};
+
+#endif // DIM_H

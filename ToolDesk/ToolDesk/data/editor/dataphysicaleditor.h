@@ -29,11 +29,13 @@
 #include <QString>
 
 #include "include/widget/IDataEditor.h"
-#include "include/widget/idataviewer.h"
+#include "include/widget/IDataViewer.h"
 #include "include/project/IProject.h"
 #include "include/data/IDataPhysical.h"
 #include "basedoubleeditor.h"
 #include "descriptioneditor.h"
+#include "dimentionviewer.h"
+#include "dimentioneditor.h"
 
 namespace DeskGui {
 
@@ -47,56 +49,24 @@ public:
     virtual void release();
 
 signals:
+    void dataChanged(DeskData::IData* data);
+
+public slots:
+    void setData(DeskData::IData* data);
 
 private slots:
     void setDouble(double data);
     void setDimention(DeskData::IData* data);
+    void onDataChanged();
 
 private:
     DescriptionEditor* _descriptionEditor;
     QLabel* _doubleViewer;
     BaseDoubleEditor* _doubleEditor;
-    IDataViewer* _dimentionViewer;
-    IDataEditor* _dimentionEditor;
+    DimentionViewer* _dimentionViewer;
+    DimentionEditor* _dimentionEditor;
 
     DeskData::IPhysical* _physicalValue;
-
-
-/*
-public slots:
-    DeskData::IData* createData(QString& error);
-
-private slots:
-    void redraw();
-    void onAddDimention();
-    void onDeleteDimention();
-    void onMoveUpDimention();
-    void onMoveDownDimention();
-    void redrawDimentionButton();
-
-private:
-    QLabel* _result;
-
-    QLineEdit* _base;
-    QLabel* _tenBase;
-    QLineEdit* _power;
-
-    QTreeWidget* _dimentionUnitTree;
-
-    QWidget* _dimentionActions;
-    QPushButton* _dimentionUnitDelete;
-    QPushButton* _dimentionUnitUp;
-    QPushButton* _dimentionUnitDown;
-
-    QWidget* _dimentionAdd;
-    QComboBox* _dimentionPrefixList;
-    QComboBox* _dimentionUnitList;
-    QComboBox* _dimentionPowerList;
-    QPushButton* _dimentionUnitAdd;
-
-    DeskData::Double getDouble(QString string,bool& isOk);
-    void Normalize(DeskData::Double& base, DeskData::Int& power, bool &ok);
-    QString toPower(DeskData::Int num);*/
 
 };
 

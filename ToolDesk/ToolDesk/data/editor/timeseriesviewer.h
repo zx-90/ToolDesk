@@ -17,24 +17,31 @@
  *
  */
 
-#ifndef DESKGUI_CREATEPHYSICALREGISTRATOR_H
-#define DESKGUI_CREATEPHYSICALREGISTRATOR_H
+#ifndef TIMESERIESVIEWER_H
+#define TIMESERIESVIEWER_H
 
-#include "include/function/IFunctionRegistrator.h"
+#include <QVBoxLayout>
+#include <QLabel>
+#include <QtCharts/QChartView>
 
-namespace DeskGui {
+#include "include/widget/IDataViewer.h"
 
-class CreatePhysicalRegistrator : public IFunctionRegistrator
+class TimeSeriesViewer : public DeskGui::IDataViewer
 {
-public:
-    CreatePhysicalRegistrator();
-    virtual ~CreatePhysicalRegistrator();
+    Q_OBJECT
 
-    virtual QString getName() const;
-    virtual IFunctionDialog* getDialog(DeskData::IProject* project, QWidget* parent = 0) const;
+public:
+    TimeSeriesViewer(const DeskData::IData* data, QWidget* parent = 0);
+    ~TimeSeriesViewer();
+
+public slots:
+    virtual void onChangeData(const DeskData::IData* data = NULL);
+
+private:
+    QVBoxLayout* _layout;
+    QLabel* _label;
+    QtCharts::QChartView* _chart;
 
 };
 
-} // namespace DeskGui
-
-#endif // DESKGUI_CREATEPHYSICALREGISTRATOR_H
+#endif // TIMESERIESVIEWER_H

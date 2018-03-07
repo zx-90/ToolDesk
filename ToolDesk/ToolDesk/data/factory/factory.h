@@ -33,6 +33,7 @@ public:
     virtual void release();
 
     virtual IData* createData(Size type) const;
+    virtual IDimention *createDimention() const;
     virtual IContainer* createContainer() const;
     virtual ISummation* createSummation() const;
 };

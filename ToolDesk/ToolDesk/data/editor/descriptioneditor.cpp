@@ -19,31 +19,45 @@
 
 #include "descriptioneditor.h"
 
-#include <QVBoxLayout>
-#include <QLabel>
+#include <QHBoxLayout>
 
 namespace DeskGui {
 
-DescriptionEditor::DescriptionEditor(DeskData::IData *data, QWidget *parent) :
-    IDataEditor(data, parent)
+DescriptionEditor::DescriptionEditor(DeskData::IDescription *description, QWidget *parent) :
+    QWidget(parent),
+    _description(description)
 {
-    QVBoxLayout* layout = new QVBoxLayout(this);
+    QHBoxLayout* layout = new QHBoxLayout(this);
+    layout->setMargin(0);
 
-    QLabel* label = new QLabel(tr("Description:"), this);
-    layout->addWidget(label);
-    _descriptionEditor = new QLineEdit(this);
+    _descriptionEditor = new ShiftedLineEdit(this);
     layout->addWidget(_descriptionEditor);
+    setDescription(description);
 
-    connect(
+    QWidget::connect(
                 _descriptionEditor, SIGNAL(textChanged(const QString &)),
                 this, SLOT(onTextChanged(const QString &))
-                                           );
+                );
+}
+
+void DescriptionEditor::setDescription(DeskData::IDescription *description)
+{
+    _description = description;
+    if (description) {
+        _descriptionEditor->setEnabled(true);
+        _descriptionEditor->setText(description->getDescription());
+    } else {
+        _descriptionEditor->setEnabled(false);
+        _descriptionEditor->setText("");
+    }
 }
 
 void DescriptionEditor::onTextChanged(const QString &text)
 {
-    _data->setDescription(text.toStdWString().c_str());
-    emit dataChanged(_data);
+    if (_description) {
+        _description->setDescription(text);
+    }
+    emit dataChanged(_description);
 }
 
 }

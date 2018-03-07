@@ -20,26 +20,26 @@
 #ifndef DESKGUI_DIMENTIONVIEWER_H
 #define DESKGUI_DIMENTIONVIEWER_H
 
-#include "include/widget/idataviewer.h"
+#include "include/widget/IDataViewer.h"
 #include <QLabel>
 
 namespace DeskGui {
 
-class DimentionViewer : public DeskGui::IDataViewer
+class DimentionViewer : public QWidget//: public DeskGui::IDataViewer
 {
     Q_OBJECT
 
 public:
-    DimentionViewer(const DeskData::IData* data, QWidget* parent = 0);
+    DimentionViewer(const DeskData::IDimention *data, QWidget* parent = 0);
     virtual ~DimentionViewer();
 
 public slots:
-    virtual void onChangeData(const DeskData::IData* data = NULL);
+    virtual void onDataChanged(DeskData::IDimention *data = NULL);
 
 private:
     QLabel* _label;
+    const DeskData::IDimention* _data;
 
-    //QString toPower(DeskData::Int num);
 };
 
 } // namespace DeskGui

@@ -20,7 +20,7 @@
 #ifndef DATAPHYSICALVIEWER_H
 #define DATAPHYSICALVIEWER_H
 
-#include "include/widget/idataviewer.h"
+#include "include/widget/IDataViewer.h"
 #include "descriptionviewer.h"
 #include <QVBoxLayout>
 #include "dimentionviewer.h"

@@ -21,7 +21,7 @@
 #define DATADIMENTION_H
 
 #include <string>
-#include "include/data/IDataDimention.h"
+#include "include/data/IDimention.h"
 #include "data.h"
 
 namespace DeskData {
@@ -33,11 +33,6 @@ public:
     virtual ~DataDimention();
 
     virtual void release();
-    virtual Size getType() const;
-    virtual void setId(Size id);
-    virtual Size getId() const;
-    virtual const Char* getDescription() const;
-    virtual void setDescription(const Char* description);
 
     virtual IDimention* clone() const;
 
@@ -58,7 +53,6 @@ private:
     };
 
     Size _id;
-    std::wstring _description;
 
     Size _size;
     DimentionUnit _units[DIMENTION_MAX_SIZE];

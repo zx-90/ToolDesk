@@ -43,6 +43,7 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <float.h>
+#include <QString>
 
 namespace DeskData {
 
@@ -52,9 +53,6 @@ typedef int64_t Int;
 
 // Size
 typedef uint64_t Size;
-
-// Unicode strings
-typedef wchar_t Char;
 
 // Float
 // is always has 1 bit for sign, 11 bits for exponent and 52 bits for mantissa.

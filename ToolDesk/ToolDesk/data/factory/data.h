@@ -35,13 +35,13 @@ public:
     Size getId() const;
     virtual void release();
 
-    virtual Char* getDescription();
-    virtual const Char* getDescription() const;
-    virtual void setDescription(const Char* description);
+    virtual QString getDescription();
+    virtual const QString getDescription() const;
+    virtual void setDescription(const QString description);
 
 private:
     Size _id;
-    Char* _description;
+    QString _description;
 
 };
 

@@ -39,11 +39,15 @@
 
 #include "DataList.h"
 
+#include <math.h>
+
 namespace DeskData {
 
 void Normalize(Double &base, Int &power, bool &ok)
 {
     Double tempBase = base * exp10(Double(power));
+    Double tempSign = (0 < tempBase) - (tempBase < 0);
+    tempBase = fabs(tempBase);
     Int tempPower = 0;
 
     if ((tempBase >= DBL_MAX) || (tempBase <= -DBL_MAX)) {
@@ -59,8 +63,8 @@ void Normalize(Double &base, Int &power, bool &ok)
         return;
     }
 
-    if (tempBase > 1000.0) {
-        while (tempBase > 10.0) {
+    if (tempBase >= 1000.0) {
+        while (tempBase >= 10.0) {
             tempBase /= 10.0;
             tempPower += 1;
         }
@@ -71,7 +75,7 @@ void Normalize(Double &base, Int &power, bool &ok)
             tempPower -= 1;
         }
     }
-    base = tempBase;
+    base = tempSign * tempBase;
     power = tempPower;
     ok = true;
 }
@@ -109,22 +113,61 @@ QString doubleToString(Double d)
     return result;
 }
 
-QString dimentionToString(const IData* dim)
+QString dimentionToString(const IDimention* dimention)
 {
-    QString res = "";
-    IDimention* dimention = (IDimention*)dim;
+    if (!dimention) {
+        return "";
+    }
+    if (dimention->getSize() == 0) {
+        return "";
+    }
+    if (dimention->getSize() == 1) {
+        QString res;
+        int prefixIndex = dimention->getDimentionPrefix(0);
+        int valueIndex = dimention->getDimentionType(0);
+        int power = dimention->getDimentionPower(0);
+        res += METRIC_PREFIXES[prefixIndex].prefix;
+        res += METRIX_UNITS[valueIndex].symbol;
+        if (power != 1) {
+            res += toPower(power);
+        }
+        return res;
+    }
+
+    QString num = "";
+    QString den = "";
     for (Size i = 0; i < dimention->getSize(); i++) {
         int prefixIndex = dimention->getDimentionPrefix(i);
         int valueIndex = dimention->getDimentionType(i);
         int power = dimention->getDimentionPower(i);
-        res += " ";
-        res += QString::fromWCharArray(METRIC_PREFIXES[prefixIndex].prefix);
-        res += QString::fromWCharArray(METRIX_UNITS[valueIndex].symbol);
-        if (power != 1) {
-            res += toPower(power);
+
+        if (power > 0) {
+            if (num != "") {
+                num += "·";
+            }
+            num += METRIC_PREFIXES[prefixIndex].prefix;
+            num += METRIX_UNITS[valueIndex].symbol;
+            if (power != 1) {
+                num += toPower(power);
+            }
+        } else {
+            if (den != "") {
+                den += "·";
+            }
+            den += METRIC_PREFIXES[prefixIndex].prefix;
+            den += METRIX_UNITS[valueIndex].symbol;
+            if (power != -1) {
+                den += toPower(-power);
+            }
         }
     }
-    return res;
+    if (num == "") {
+        num = "1";
+    }
+    if (den != "") {
+        num += "/" + den;
+    }
+    return num;
 }
 
 }

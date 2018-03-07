@@ -40,17 +40,18 @@
 #ifndef DATALIST
 #define DATALIST
 
+#include "DataBase.h"
+#include "DataTypes.h"
+
+#include "IDescription.h"
+#include "IDimention.h"
+
 #include "IData.h"
-#include "IDataDimention.h"
 #include "IDataPhysical.h"
 #include "IDataTimeSeries.h"
-#include "IDataNonEqudistantTimeSeries.h"
-#include "IDataPulseRandomSequence.h"
+
 #include "IContainer.h"
 #include "ISummation.h"
-
-#include <math.h>
-#include <QString>
 
 namespace DeskData {
 
@@ -59,7 +60,7 @@ const QString TEN_POWER = "·10";
 void Normalize(Double &base, Int &power, bool &ok);
 QString toPower(Int num);
 QString doubleToString(Double d);
-QString dimentionToString(const IData *dim);
+QString dimentionToString(const IDimention *dimention);
 
 }
 

@@ -24,8 +24,9 @@
 #include <QLineEdit>
 #include <QPushButton>
 #include "include/function/IFunctionDialog.h"
-#include "include/widget/idataviewer.h"
+#include "include/widget/IDataViewer.h"
 #include "include/widget/IDataEditor.h"
+#include "data/editor/descriptioneditor.h"
 #include "data/editor/basedoubleeditor.h"
 #include "data/editor/dataphysicaleditor.h"
 #include "include/data/DataList.h"
@@ -42,13 +43,29 @@ public:
 public slots:
     void runFunction();
 
+private slots:
+    void onUpValue();
+    void onDownValue();
+    void onAddValue();
+    void onRemoveValue();
+    void onChangeCurrentValue(QTreeWidgetItem *current, QTreeWidgetItem *previous);
+    void setData(DeskData::IData* data);
+
 private:
-    QPushButton* _button;
+    DescriptionEditor* _description;
+    QTreeWidget* _values;
+
+    QPushButton* _up;
+    QPushButton* _down;
+    QPushButton* _add;
+    QPushButton* _remove;
 
     DataPhysicalEditor* _editor;
 
+    QPushButton* _button;
+
     DeskData::IProject* _project;
-    DeskData::IPhysical* _physicalValue;
+    DeskData::ISummation* _value;
 
 };
 

@@ -21,16 +21,22 @@
 
 #include <QHBoxLayout>
 #include <QMessageBox>
-#include "functionitem.h"
+#include "desk/core/treewidgetitemtemplate.h"
 #include "functions/physical/createphysicalregistrator.h"
 #include "functions/timeseries/createtimeseriesregistrator.h"
 
-FunctionWidget::FunctionWidget(DeskData::IProject *project, QWidget *parent) : QWidget(parent), _project(project)
+typedef TreeWidgetItemTemplate<DeskGui::IFunctionRegistrator> FunctionItem;
+
+FunctionWidget::FunctionWidget(DeskData::IProject *project, QWidget *parent) :
+    QWidget(parent),
+    _project(project)
 {
     QHBoxLayout* layout = new QHBoxLayout(this);
     setLayout(layout);
     layout->setContentsMargins(2, 2, 2, 2);
     _tree = new QTreeWidget(this);
+    _tree->setIndentation(0);
+    _tree->setHeaderLabels(QStringList() << "Function");
     layout->addWidget(_tree);
 
     createTreeItem(new DeskGui::CreatePhysicalRegistrator());
@@ -47,7 +53,7 @@ void FunctionWidget::setProject(DeskData::IProject *project)
 
 void FunctionWidget::onClick(QTreeWidgetItem *item, int)
 {
-    DeskGui::IFunctionRegistrator* registrator = static_cast<FunctionItem *>(item)->getRegistrator();
+    DeskGui::IFunctionRegistrator* registrator = FunctionItem::getData(item);
     DeskGui::IFunctionDialog* dialog = registrator->getDialog(_project, this);
     dialog->setModal(true);
     connect(

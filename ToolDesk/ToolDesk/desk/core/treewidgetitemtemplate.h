@@ -17,24 +17,31 @@
  *
  */
 
-#ifndef DESKGUI_CREATEPHYSICALREGISTRATOR_H
-#define DESKGUI_CREATEPHYSICALREGISTRATOR_H
+#ifndef TREEWIDGETITEMTEMPLATE_H
+#define TREEWIDGETITEMTEMPLATE_H
 
-#include "include/function/IFunctionRegistrator.h"
+#include <QTreeWidgetItem>
 
-namespace DeskGui {
-
-class CreatePhysicalRegistrator : public IFunctionRegistrator
-{
+template<class T> class TreeWidgetItemTemplate : public QTreeWidgetItem {
+protected:
+    T* _t;
 public:
-    CreatePhysicalRegistrator();
-    virtual ~CreatePhysicalRegistrator();
+    TreeWidgetItemTemplate(T* t = nullptr) : _t(t) {}
+    ~TreeWidgetItemTemplate() {}
 
-    virtual QString getName() const;
-    virtual IFunctionDialog* getDialog(DeskData::IProject* project, QWidget* parent = 0) const;
+    void setData(T* t) { _t = t; }
+    T* getData() { return _t; }
+
+    static T* getData(QTreeWidgetItem* item) {
+        TreeWidgetItemTemplate<T>* it =
+                static_cast<TreeWidgetItemTemplate<T> *>(item);
+        if (it) {
+            return it->getData();
+        } else {
+            return nullptr;
+        }
+    }
 
 };
 
-} // namespace DeskGui
-
-#endif // DESKGUI_CREATEPHYSICALREGISTRATOR_H
+#endif // TREEWIDGETITEMTEMPLATE_H

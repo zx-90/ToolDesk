@@ -19,8 +19,10 @@
 
 #include "basedoubleeditor.h"
 
-#include <QVBoxLayout>
+#include "desk/core/borderlayout.h"
+#include "QDoubleValidator"
 #include <math.h>
+#include <QKeyEvent>
 
 namespace DeskGui {
 
@@ -28,30 +30,86 @@ const QString BASE_ERROR = "<font color=\"red\">***</font>";
 const QString POWER_ERROR = "<font color=\"red\">***</font>";
 
 BaseDoubleEditor::BaseDoubleEditor(QWidget *parent) :
-    QWidget(parent)
+    QWidget(parent),
+    _base(nullptr),
+    _tenBase(nullptr),
+    _power(nullptr)
 {
-    QHBoxLayout* numberLayout = new QHBoxLayout(this);
-    _base = new QLineEdit(this);
+    BorderLayout* numberLayout = new BorderLayout(this);
+    numberLayout->setMargin(0);
+    numberLayout->setContentsMargins(0, 0, 0, 0);
+    numberLayout->setSpacing(0);
+
+    _base = new ShiftedLineEdit(this);
     _base->setText("0");
     _base->setAlignment(Qt::AlignRight);
-    QWidget::connect(_base,SIGNAL(textChanged(const QString&)),this,SLOT(redraw()));
-    numberLayout->addWidget(_base);
+    _base->setMaxLength(17);
+    _base->setValidator(new QDoubleValidator(_base));
+    QWidget::connect(
+                _base, SIGNAL(textChanged(const QString&)),
+                this, SLOT(resizeToContent())
+                );
+    QWidget::connect(
+                _base, SIGNAL(returnPressed()),
+                this, SLOT(onBaseReturnPressed())
+                );
+    numberLayout->addWidget(_base, BorderLayout::West);
+
     _tenBase = new QLabel(this);
     _tenBase->setText(DeskData::TEN_POWER);
-    numberLayout->addWidget(_tenBase);
-    _power = new QLineEdit(this);
+    _tenBase->setMargin(0);
+    _tenBase->setIndent(0);
+    _tenBase->setContentsMargins(0,0,0,0);
+    numberLayout->addWidget(_tenBase, BorderLayout::West);
+
+    _power = new ShiftedLineEdit(this);
     QFont font = _power->font();
     font.setPointSize(font.pointSize() * 3 / 4);
     _power->setFont(font);
     _power->setAlignment(Qt::AlignTop);
     _power->setText("0");
-    QWidget::connect(_power,SIGNAL(textChanged(const QString&)),this,SLOT(redraw()));
-    numberLayout->addWidget(_power);
+    _power->setTextMargins(0,0,0,0);
+    _power->setMaxLength(3);
+    _power->setValidator(new QIntValidator(_power));
+    QWidget::connect(
+                _power, SIGNAL(textChanged(const QString&)),
+                this, SLOT(resizeToContent())
+                );
+    QWidget::connect(
+                _power, SIGNAL(returnPressed()),
+                this, SLOT(onPowerReturnPressed())
+                );
+    numberLayout->addWidget(_power, BorderLayout::West);
+
+    QWidget* widget = new QWidget(this);
+    QFontMetrics fm(_base->font());
+    widget->setMinimumHeight(fm.height() + 7);
+    widget->setMinimumWidth(1);
+    numberLayout->addWidget(widget, BorderLayout::Center);
+
+    setContentsMargins(0, 0, 0, 0);
+    setMinimumWidth(265);
+    resizeToContent();
 }
 
 BaseDoubleEditor::~BaseDoubleEditor()
 {
 
+}
+
+void BaseDoubleEditor::setDouble(DeskData::Double d)
+{
+    DeskData::Double base = d;
+    DeskData::Int power = 0;
+    bool normalizeOk;
+    DeskData::Normalize(base, power, normalizeOk);
+    if (normalizeOk) {
+        _base->setText(QString::number(base));
+        _power->setText(QString::number(power));
+    } else {
+        _base->setText("");
+        _power->setText("");
+    }
 }
 
 void BaseDoubleEditor::redraw()
@@ -60,8 +118,18 @@ void BaseDoubleEditor::redraw()
 
     bool baseOk;
     DeskData::Double base = getDouble(_base->text(), baseOk);
+    if (_base->text() == "") {
+        base = 0;
+        baseOk = true;
+    }
+
     bool powerOk;
     DeskData::Int power = _power->text().toInt(&powerOk);
+    if (_power->text() == "") {
+        power = 0;
+        powerOk = true;
+    }
+
     if (baseOk && powerOk) {
         bool normalizeOk;
         DeskData::Normalize(base, power, normalizeOk);
@@ -80,10 +148,10 @@ void BaseDoubleEditor::redraw()
     }
     if (powerOk) {
         if (power != 0) {
-            res += DeskData::TEN_POWER + " " + DeskData::toPower(power);
+            res += DeskData::TEN_POWER + DeskData::toPower(power);
         }
     } else {
-        res += DeskData::TEN_POWER + " " + POWER_ERROR;
+        res += DeskData::TEN_POWER + POWER_ERROR;
     }
     res += " ";
 
@@ -92,6 +160,51 @@ void BaseDoubleEditor::redraw()
     }
 
     emit dataChanged(res);
+}
+
+void BaseDoubleEditor::resizeToContent()
+{
+    if (_base) {
+        QFont font(_base->font());
+        QFontMetrics fm(font);
+
+        // TODO: how to calculate MARGINS from QEditLine properties.
+        const int MARGINS = 7;
+        int pixelsWide = fm.width(_base->text()) + MARGINS;
+
+        _base->setFixedWidth(pixelsWide);
+    }
+    if (_tenBase) {
+        QFont fontTen(_tenBase->font());
+        QFontMetrics fm(fontTen);
+
+        int pixelsWide = fm.width(_tenBase->text());
+
+        _tenBase->setFixedWidth(pixelsWide);
+    }
+    if (_power) {
+        QString text = _power->text();
+
+        QFont font(_power->font());
+        QFontMetrics fm(font);
+
+        // TODO: how to calculate MARGINS from QEditLine properties.
+        const int MARGINS = 7;
+        int pixelsWide = fm.width(text) + MARGINS;
+
+        _power->setFixedWidth(pixelsWide);
+    }
+    redraw();
+}
+
+void BaseDoubleEditor::onBaseReturnPressed()
+{
+    _power->setFocus();
+}
+
+void BaseDoubleEditor::onPowerReturnPressed()
+{
+    _base->setFocus();
 }
 
 DeskData::Double BaseDoubleEditor::getDouble(QString string, bool &isOk)

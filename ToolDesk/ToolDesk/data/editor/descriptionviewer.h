@@ -21,23 +21,25 @@
 #define DESCRIPTIONVIEWER_H
 
 #include <QWidget>
-#include "include/widget/idataviewer.h"
+#include "include/widget/IDataViewer.h"
 #include <QLabel>
 
 namespace DeskGui {
 
-class DescriptionViewer : public DeskGui::IDataViewer
+class DescriptionViewer : public QWidget
 {
     Q_OBJECT
 
 public:
-    DescriptionViewer(const DeskData::IData* data, QWidget* parent = 0);
+    DescriptionViewer(const DeskData::IDescription* description, QWidget* parent = 0);
     virtual ~DescriptionViewer();
 
 public slots:
-    virtual void onChangeData(const DeskData::IData* data = NULL);
+    virtual void onChangeData(const DeskData::IDescription* description = NULL);
 
 private:
+    const DeskData::IDescription* _description;
+
     QLabel* _label;
 
 };

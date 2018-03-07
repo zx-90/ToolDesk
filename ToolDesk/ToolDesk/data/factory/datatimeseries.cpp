@@ -24,24 +24,30 @@
 
 namespace DeskData {
 
-DataTimeSeries::DataTimeSeries()
+DataTimeSeries::DataTimeSeries() :
+    _id(0),
+    _description(""),
+    _size(0),
+    _xDimention(new DataDimention()),
+    _isXOffset(true),
+    _xOffset(0),
+    _xQuant(1),
+    _arrayX(nullptr),
+    _yDimention(new DataDimention()),
+    _isYOffset(true),
+    _yOffset(1),
+    _arrayY(nullptr)
 {
-    _xDimention = new DataDimention();
-    _xOffset = 0.0;
-    _xQuant = 1.0;
-    _yDimention = new DataDimention();
-    _yOffset = 0.0;
-    _yQuant = 1.0;
-
-    _size = 0;
-    _array = new Double[_size];
 }
 
 DataTimeSeries::~DataTimeSeries()
 {
     _xDimention->release();
     _yDimention->release();
-    delete _array;
+    delete _arrayX;
+    _arrayX = nullptr;
+    delete _arrayY;
+    _arrayY = nullptr;
 }
 
 void DataTimeSeries::release()
@@ -64,12 +70,12 @@ Size DataTimeSeries::getId() const
     return _id;
 }
 
-const Char *DataTimeSeries::getDescription() const
+const QString DataTimeSeries::getDescription() const
 {
-    return _description.c_str();
+    return _description;
 }
 
-void DataTimeSeries::setDescription(const Char *description)
+void DataTimeSeries::setDescription(const QString description)
 {
     _description = description;
 }
@@ -78,20 +84,45 @@ ITimeSeries *DataTimeSeries::clone() const
 {
     DataTimeSeries* result = new DataTimeSeries();
     result->setDescription(getDescription());
-    result->setXDimention(getXDimention());
-    result->setXOffset(getXOffset());
-    result->setXQuant(getXQuant());
-    result->setYDimention(getYDimention());
-    result->setYOffset(getYOffset());
-    result->setYQuant(getYQuant());
+
     result->setSize(getSize());
-    memcpy(result->_array, _array, _size * sizeof(Double));
+
+    result->setXDimention(getXDimention());
+    if (isXOffset()) {
+        result->setXOffset(getXOffset(), getXQuant());
+    } else if (isArrayX()) {
+        result->setArrayX();
+        memcpy(result->_arrayX, _arrayX, _size * sizeof(Double));
+    }
+
+    result->setYDimention(getYDimention());
+    if (isYOffset()) {
+        result->setYOffset(getYOffset());
+    } else if (isArrayY()) {
+        result->setArrayY();
+        memcpy(result->_arrayY, _arrayY, _size * sizeof(Double));
+    }
+
     return result;
+}
+
+void DataTimeSeries::setSize(Size size)
+{
+    _size = size;
+    delete _arrayX;
+    _arrayX = new Double[size];
+    delete _arrayY;
+    _arrayY = new Double[size];
+}
+
+Size DataTimeSeries::getSize() const
+{
+    return _size;
 }
 
 void DataTimeSeries::setXDimention(const IDimention *dimention)
 {
-    if (dimention == NULL) {
+    if (!dimention) {
         return;
     }
     if (dimention == _xDimention) {
@@ -111,9 +142,18 @@ const IDimention *DataTimeSeries::getXDimention() const
     return _xDimention;
 }
 
-void DataTimeSeries::setXOffset(const Double xOffset)
+void DataTimeSeries::setXOffset(const Double xOffset, const Double xQuant)
 {
+    _isXOffset = true;
     _xOffset = xOffset;
+    _xQuant = xQuant;
+    delete _arrayX;
+    _arrayX = nullptr;
+}
+
+bool DataTimeSeries::isXOffset() const
+{
+    return _xOffset;
 }
 
 Double DataTimeSeries::getXOffset() const
@@ -121,19 +161,38 @@ Double DataTimeSeries::getXOffset() const
     return _xOffset;
 }
 
-void DataTimeSeries::setXQuant(const Double xQuant)
-{
-    _xQuant = xQuant;
-}
-
 Double DataTimeSeries::getXQuant() const
 {
     return _xQuant;
 }
 
+void DataTimeSeries::setArrayX()
+{
+    if (isArrayX()) {
+        return;
+    }
+    _isXOffset = false;
+    _arrayX = new Double[_size];
+}
+
+bool DataTimeSeries::isArrayX() const
+{
+    return !_xOffset;
+}
+
+Double *DataTimeSeries::getArrayX()
+{
+    return _arrayX;
+}
+
+const Double *DataTimeSeries::getArrayX() const
+{
+    return _arrayX;
+}
+
 void DataTimeSeries::setYDimention(const IDimention *dimention)
 {
-    if (dimention == NULL) {
+    if (!dimention) {
         return;
     }
     if (dimention == _yDimention) {
@@ -158,41 +217,38 @@ void DataTimeSeries::setYOffset(const Double yOffset)
     _yOffset = yOffset;
 }
 
+bool DataTimeSeries::isYOffset() const
+{
+    return _isYOffset;
+}
+
 Double DataTimeSeries::getYOffset() const
 {
     return _yOffset;
 }
 
-void DataTimeSeries::setYQuant(const Double yQuant)
+void DataTimeSeries::setArrayY()
 {
-    _yQuant = yQuant;
+    if (isArrayY()) {
+        return;
+    }
+    _isYOffset = false;
+    _arrayY = new Double[_size];
 }
 
-Double DataTimeSeries::getYQuant() const
+bool DataTimeSeries::isArrayY() const
 {
-    return _yQuant;
-}
-
-void DataTimeSeries::setSize(Size size)
-{
-    _size = size;
-    delete _array;
-    _array = new Double[size];
-}
-
-Size DataTimeSeries::getSize() const
-{
-    return _size;
+    return !_isYOffset;
 }
 
 Double *DataTimeSeries::getArrayY()
 {
-    return _array;
+    return _arrayY;
 }
 
 const Double *DataTimeSeries::getArrayY() const
 {
-    return _array;
+    return _arrayY;
 }
 
 } // namespace ToolDeskData

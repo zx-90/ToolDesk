@@ -26,42 +26,36 @@
 #include <QComboBox>
 #include "include/widget/IDataEditor.h"
 #include "include/data/DataList.h"
+#include "dim.h"
 
 namespace DeskGui {
 
-class DimentionEditor : public IDataEditor
+class DimentionEditor : public QWidget
 {
     Q_OBJECT
 
 public:
-    DimentionEditor(DeskData::IData* data,QWidget* parent = 0);
+    DimentionEditor(DeskData::IDimention* data,QWidget* parent = 0);
     ~DimentionEditor();
 
-signals:
-    void dataChanged(DeskData::IData* data);
+    void setDimention(DeskData::IDimention* data);
 
-public slots:
-    void onAddDimention();
-    void onDeleteDimention();
-    void onMoveUpDimention();
-    void onMoveDownDimention();
-    void redraw();
+signals:
+    void dataChanged(DeskData::IDimention* data);
+
+private slots:
+    void onClick();
+    void onCloseDialog();
+    void onSetClick();
+    void onChangeDimStatus();
 
 private:
-    QTreeWidget* _dimentionUnitTree;
+    QPushButton* _button;
 
-    QWidget* _dimentionActions;
-    QPushButton* _dimentionUnitDelete;
-    QPushButton* _dimentionUnitUp;
-    QPushButton* _dimentionUnitDown;
+    DeskData::IDimention* _data;
 
-    QWidget* _dimentionAdd;
-    QComboBox* _dimentionPrefixList;
-    QComboBox* _dimentionUnitList;
-    QComboBox* _dimentionPowerList;
-    QPushButton* _dimentionUnitAdd;
-
-
+    QDialog* _dialog;
+    std::vector<Dim*> _dims;
 };
 
 } // namespace DeskGui

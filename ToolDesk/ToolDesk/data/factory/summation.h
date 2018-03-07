@@ -33,8 +33,8 @@ public:
 
     virtual void release();
 
-    virtual void setDescription(const Char* description);
-    virtual const Char* getDescription() const;
+    virtual void setDescription(const QString description);
+    virtual const QString getDescription() const;
 
     virtual void setInData(const IData* data);
     virtual void registerInData(IData* data);
@@ -45,7 +45,7 @@ public:
     virtual IContainer* getRegisterContainer() const;
 
 private:
-    std::wstring _description;
+    QString _description;
     IContainer* _inContainer;
     IContainer* _outContainer;
     IContainer* _registerContainer;

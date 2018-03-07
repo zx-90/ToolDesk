@@ -21,9 +21,10 @@
 
 namespace DeskData {
 
-DataDimention::DataDimention()
+DataDimention::DataDimention() :
+    _id(-1),
+    _size(0)
 {
-    _size = 0;
 }
 
 DataDimention::~DataDimention()
@@ -35,35 +36,9 @@ void DataDimention::release()
     delete this;
 }
 
-Size DataDimention::getType() const
-{
-    return DATATYPE_DIMENTION;
-}
-
-void DataDimention::setId(Size id)
-{
-    _id = id;
-}
-
-Size DataDimention::getId() const
-{
-    return _id;
-}
-
-const Char *DataDimention::getDescription() const
-{
-    return _description.c_str();
-}
-
-void DataDimention::setDescription(const Char *description)
-{
-    _description = description;
-}
-
 IDimention *DataDimention::clone() const
 {
     DataDimention* result = new DataDimention();
-    result->setDescription(getDescription());
     result->_size = _size;
     for (Size i = 0; i < _size; i++) {
         result->_units[i].MetricPrefix = _units[i].MetricPrefix;

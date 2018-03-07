@@ -41,6 +41,7 @@
 #define IFACTORY
 
 #include "include/data/IData.h"
+#include "include/data/IDimention.h"
 #include "include/data/IContainer.h"
 #include "include/data/ISummation.h"
 
@@ -56,6 +57,7 @@ public:
     virtual void release() = 0;
 
     virtual IData* createData(Size type) const = 0;
+    virtual IDimention* createDimention() const = 0;
     virtual IContainer* createContainer() const = 0;
     virtual ISummation* createSummation() const = 0;
 

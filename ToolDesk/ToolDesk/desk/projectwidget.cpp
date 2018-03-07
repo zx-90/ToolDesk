@@ -29,12 +29,13 @@ ProjectWidget::ProjectWidget(DeskData::IProject *project, QWidget *view, QWidget
     QWidget(parent),
     _project(project),
     _view(view),
-    _viewer(NULL)
+    _viewer(nullptr)
 {
     QHBoxLayout* layout = new QHBoxLayout(this);
     setLayout(layout);
     layout->setContentsMargins(2, 2, 2, 2);
     _tree = new QTreeWidget(this);
+    _tree->setHeaderLabels(QStringList() << "Value" << "Description");
     _tree->setColumnCount(2);
     layout->addWidget(_tree);
 
@@ -58,7 +59,7 @@ void ProjectWidget::onChange()
         const DeskData::ISummation* summation = _project->getFunctionResult(i);
         const DeskData::IContainer* container = summation->getOutContainer();
         QStringList list;
-        list.push_back(QString::fromWCharArray(summation->getDescription()));
+        list.push_back(summation->getDescription());
         ProjectItem* summationItem = new ProjectItem(container, list);
         _tree->addTopLevelItem(summationItem);
         summationItem->setFirstColumnSpanned(true);
@@ -78,7 +79,7 @@ void ProjectWidget::onChange()
             }
             QStringList list;
             list.push_back(valueStr);
-            list.push_back(QString::fromWCharArray(data->getDescription()));
+            list.push_back(data->getDescription());
             ProjectItem* dataItem = new ProjectItem(data, list);
             summationItem->addChild(dataItem);
         }
@@ -88,11 +89,8 @@ void ProjectWidget::onChange()
 
 void ProjectWidget::onClick(QTreeWidgetItem *current, QTreeWidgetItem *previous)
 {
-    //QMessageBox::information(this, "title", "text");
-    if (_viewer) {
-        delete _viewer;
-        _viewer = NULL;
-    }
+    delete _viewer;
+    _viewer = nullptr;
     if (!current) {
         return;
     }
@@ -102,7 +100,7 @@ void ProjectWidget::onClick(QTreeWidgetItem *current, QTreeWidgetItem *previous)
 
     ProjectItem* cur = (ProjectItem*)current;
     const DeskData::IData* data = cur->getData();
-    if (data == NULL) {
+    if (!data) {
         return;
     }
     if (data->getType() == DeskData::DATATYPE_PHYSICAL) {

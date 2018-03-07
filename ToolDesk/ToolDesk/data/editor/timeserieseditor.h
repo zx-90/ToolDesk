@@ -17,24 +17,15 @@
  *
  */
 
-#include "idataviewer.h"
+#ifndef TIMESERIESEDITOR_H
+#define TIMESERIESEDITOR_H
 
-namespace DeskGui {
+#include "include/widget/IDataEditor.h"
 
-IDataViewer::IDataViewer(const DeskData::IData* data, QWidget* parent) :
-    QWidget(parent), _data(data)
+/*class TimeSeriesEditor : public DeskGui::IDataEditor
 {
+public:
+    TimeSeriesEditor();
+};*/
 
-}
-
-IDataViewer::~IDataViewer()
-{
-
-}
-
-void IDataViewer::onChangeData(const DeskData::IData *)
-{
-
-}
-
-}
+#endif // TIMESERIESEDITOR_H

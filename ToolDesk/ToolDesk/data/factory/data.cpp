@@ -23,16 +23,14 @@
 
 namespace DeskData {
 
-DataCore::DataCore()
+DataCore::DataCore() :
+    _id(0),
+    _description("")
 {
-    _id = 0;
-    _description = new Char[1];
-    _description[0] = 0;
 }
 
 DataCore::~DataCore()
 {
-    delete _description;
 }
 
 void DataCore::setId(Size id)
@@ -50,26 +48,19 @@ void DataCore::release()
     delete this;
 }
 
-Char* DataCore::getDescription()
+QString DataCore::getDescription()
 {
     return _description;
 }
 
-const Char* DataCore::getDescription() const
+const QString DataCore::getDescription() const
 {
     return _description;
 }
 
-void DataCore::setDescription(const Char *description)
+void DataCore::setDescription(const QString description)
 {
-    if (description == _description) {
-        return;
-    }
-    delete _description;
-    size_t len = wcslen(description);
-    _description = new Char[len + 1];
-    wcscpy(_description,description);
-    _description[len] = 0;
+    _description = description;
 }
 
 }

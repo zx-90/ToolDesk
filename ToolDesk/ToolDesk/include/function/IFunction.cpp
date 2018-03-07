@@ -37,50 +37,18 @@
  *
  */
 
-#ifndef IDATAPULSERANDOMSEQUENCE
-#define IDATAPULSERANDOMSEQUENCE
+#include "IFunction.h"
 
-#include "IData.h"
-#include "IDataDimention.h"
+namespace  DeskFunction {
 
-namespace DeskData {
-
-class IPulseRandomSequence : public IData {
-protected:
-
-    IPulseRandomSequence() {}
-    virtual ~IPulseRandomSequence() {}
-
-public:
-
-    virtual IPulseRandomSequence* clone() const = 0;
-
-    virtual void setXDimention(const IDimention* dimention) = 0;
-    virtual IDimention* getXDimention() = 0;
-    virtual const IDimention* getXDimention() const = 0;
-    virtual void setXOffset(const Double xOffset) = 0;
-    virtual Double getXOffset() const = 0;
-    virtual void setXQuant(const Double xQuant) = 0;
-    virtual Double getXQuant() const = 0;
-
-    virtual void setYDimention(const IDimention* dimention) = 0;
-    virtual IDimention* getYDimention() = 0;
-    virtual const IDimention* getYDimention() const = 0;
-    virtual void setYOffset(const Double yOffset) = 0;
-    virtual Double getYOffset() const = 0;
-    virtual void setYQuant(const Double yQuant) = 0;
-    virtual Double getYQuant() const = 0;
-
-    virtual void setSize(Size size) = 0;
-    virtual Size getSize() const = 0;
-    virtual Double* getArrayX() = 0;
-    virtual const Double* getArrayX() const = 0;
-
-};
+IFunction::IFunction(QObject *parent) : QObject(parent)
+{
 
 }
 
+IFunction::~IFunction()
+{
 
+}
 
-#endif // IDATAPULSERANDOMSEQUENCE
-
+}

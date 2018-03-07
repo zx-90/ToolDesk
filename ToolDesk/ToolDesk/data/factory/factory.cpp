@@ -22,8 +22,6 @@
 #include "datadimention.h"
 #include "dataphysical.h"
 #include "datatimeseries.h"
-#include "datanonequdistanttimeseries.h"
-#include "datapulserandomsequence.h"
 
 #include "container.h"
 #include "summation.h"
@@ -48,13 +46,15 @@ void Factory::release()
 IData *Factory::createData(Size type) const
 {
     switch (type) {
-    case DATATYPE_DIMENTION : return new DataDimention();
     case DATATYPE_PHYSICAL : return new DataPhysical();
     case DATATYPE_TIMESERIES : return new DataTimeSeries();
-    case DATATYPE_NON_EQUDISTANT_TIMESERIES : return new DataNonEqudistantTimeSeries();
-    case DATATYPE_PULSE_RANDOM_SEQUENCE : return new DataPulseRandomSequence();
-    default : return NULL;
+    default : return nullptr;
     }
+}
+
+IDimention *Factory::createDimention() const
+{
+    return new DataDimention();
 }
 
 IContainer *Factory::createContainer() const

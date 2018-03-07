@@ -23,6 +23,7 @@
 #include "project.h"
 #include <QString>
 #include <QFile>
+#include "include/data/DataList.h"
 
 namespace DeskData {
 
@@ -38,19 +39,23 @@ public:
 private:
     void saveData(QFile& file, const IData* data);
     void saveContainer(QFile& file, const IContainer* container);
+    void save(QFile &file, bool data);
     void save(QFile& file, Int data);
     void save(QFile& file, Size data);
     void save(QFile& file, Double data);
-    void save(QFile& file, const Char* data);
+    void save(QFile& file, const QString data);
     void save(QFile& file, const Double* data, Size size);
+    void save(QFile &file, const IDimention* data);
 
     IData *loadData(const IFactory* factory, QFile& file);
+    bool loadBool(QFile &file);
     Size loadSize(QFile& file);
     Int loadInt(QFile& file);
     Double loadDouble(QFile& file);
-    void loadString(QFile& file, Char* data, Size len);
+    QString loadString(QFile& file, Size len);
     void loadDoubleArray(QFile& file, Double* data, Size len);
     void loadDataHeader(QFile& file, IData* data);
+    IDimention* loadDataDimention(QFile &file, const IFactory* factory);
     ISummation* loadFunc(Project* project, const IFactory* factory, QFile& file);
     void loadContainer(Project *project, IContainer *container, QFile& file);
 };

@@ -64,7 +64,7 @@ void Project::setFunctionResult(ISummation *result)
         _id++;
         _data.push_back(data);
         IContainer* container = _dataByTypes[data->getType()];
-        if (container == NULL) {
+        if (!container) {
             container = _factory->createContainer();
             _dataByTypes.insert(std::pair<Size, IContainer*>(data->getType(), container));
         }
@@ -80,7 +80,7 @@ Size Project::getDataCount() const
 const IData *Project::getData(Size number) const
 {
     if (number >= _data.size()) {
-        return NULL;
+        return nullptr;
     }
     return _data.at(number);
 }
@@ -93,12 +93,12 @@ const IData *Project::getDataById(Size id) const
             return data;
         }
     }
-    return NULL;
+    return nullptr;
 }
 
 void Project::setData(IData *data)
 {
-    if (data == NULL) {
+    if (!data) {
         return;
     }
     _data.push_back(data);
@@ -112,7 +112,7 @@ Size Project::getFunctionCount() const
 const ISummation *Project::getFunctionResult(Size id) const
 {
     if (id >= _functionResults.size()) {
-        return NULL;
+        return nullptr;
     }
     return _functionResults.at(id);
 }

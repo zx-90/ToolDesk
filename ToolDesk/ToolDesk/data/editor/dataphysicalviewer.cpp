@@ -26,9 +26,9 @@ DataPhysicalViewer::DataPhysicalViewer(const DeskData::IData *data, QWidget* par
 {
 
     _layout = new QVBoxLayout(this);
-    _description = NULL;
-    _number = NULL;
-    _dimention = NULL;
+    _description = nullptr;
+    _number = nullptr;
+    _dimention = nullptr;
 
     _description = new DescriptionViewer(data, this);
     _layout->addWidget(_description);
@@ -51,8 +51,13 @@ void DataPhysicalViewer::onChangeData(const DeskData::IData *data)
     _data = data;
     _description->onChangeData(data);
     DeskData::IPhysical* physical = (DeskData::IPhysical*)data;
-    _number->setText(DeskData::doubleToString(physical->getValue()));
-    _dimention->onChangeData(data);
+    if (physical) {
+        _number->setText(DeskData::doubleToString(physical->getValue()));
+        _dimention->onDataChanged(physical->getDimention());
+    } else {
+        _number->setText("");
+        _dimention->onDataChanged(nullptr);
+    }
 }
 
 }

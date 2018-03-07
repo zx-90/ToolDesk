@@ -20,13 +20,13 @@
 #include "projectitem.h"
 
 ProjectItem::ProjectItem(const DeskData::IContainer *container, QStringList &list) :
-    QTreeWidgetItem(list), _container(container), _data(NULL)
+    QTreeWidgetItem(list), _container(container), _data(nullptr)
 {
 
 }
 
 ProjectItem::ProjectItem(const DeskData::IData *data, QStringList &list) :
-    QTreeWidgetItem(list), _container(NULL), _data(data)
+    QTreeWidgetItem(list), _container(nullptr), _data(data)
 {
 
 }

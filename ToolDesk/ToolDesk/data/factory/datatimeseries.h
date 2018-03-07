@@ -36,45 +36,60 @@ public:
     virtual Size getType() const;
     virtual void setId(Size id);
     virtual Size getId() const;
-    virtual const Char* getDescription() const;
-    virtual void setDescription(const Char* description);
+    virtual const QString getDescription() const;
+    virtual void setDescription(const QString description);
 
     virtual ITimeSeries* clone() const;
 
+    virtual void setSize(Size size);
+    virtual Size getSize() const;
+
+    // X
     virtual void setXDimention(const IDimention* dimention);
     virtual IDimention *getXDimention();
     virtual const IDimention *getXDimention() const;
-    virtual void setXOffset(const Double xOffset);
+    // x[i] = offset + i * quant
+    virtual void setXOffset(const Double xOffset, const Double xQuant);
+    virtual bool isXOffset() const;
     virtual Double getXOffset() const;
-    virtual void setXQuant(const Double xQuant);
     virtual Double getXQuant() const;
+    // x[i] = array[i]
+    virtual void setArrayX();
+    virtual bool isArrayX() const;
+    virtual Double *getArrayX();
+    virtual const Double *getArrayX() const;
 
+    // Y
     virtual void setYDimention(const IDimention* dimention);
     virtual IDimention *getYDimention();
     virtual const IDimention *getYDimention() const;
+    // y[i] = offset
     virtual void setYOffset(const Double yOffset);
+    virtual bool isYOffset() const;
     virtual Double getYOffset() const;
-    virtual void setYQuant(const Double yQuant);
-    virtual Double getYQuant() const;
-
-    virtual void setSize(Size size);
-    virtual Size getSize() const;
+    // y[i] = array[i]
+    virtual void setArrayY();
+    virtual bool isArrayY() const;
     virtual Double* getArrayY();
     virtual const Double* getArrayY() const;
 
 private:
     Size _id;
-    std::wstring _description;
-
-    IDimention* _xDimention;
-    Double _xOffset;
-    Double _xQuant;
-    IDimention* _yDimention;
-    Double _yOffset;
-    Double _yQuant;
+    QString _description;
 
     Size _size;
-    Double* _array;
+
+    IDimention* _xDimention;
+    bool _isXOffset;
+    Double _xOffset;
+    Double _xQuant;
+    Double* _arrayX;
+
+    IDimention* _yDimention;
+    bool _isYOffset;
+    Double _yOffset;
+    Double* _arrayY;
+
 };
 
 } // namespace ToolDeskData

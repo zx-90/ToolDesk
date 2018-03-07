@@ -23,11 +23,13 @@
 
 namespace DeskGui {
 
-DescriptionViewer::DescriptionViewer(const DeskData::IData *data, QWidget *parent) :
-    DeskGui::IDataViewer(data, parent)
+DescriptionViewer::DescriptionViewer(const DeskData::IDescription *description, QWidget *parent) :
+    QWidget(parent),
+    _description(description)
 {
     _label = new QLabel(this);
-    onChangeData(_data);
+    _label->setMargin(0);
+    onChangeData(_description);
 }
 
 DescriptionViewer::~DescriptionViewer()
@@ -35,11 +37,11 @@ DescriptionViewer::~DescriptionViewer()
 
 }
 
-void DescriptionViewer::onChangeData(const DeskData::IData *data)
+void DescriptionViewer::onChangeData(const DeskData::IDescription *description)
 {
-    _data = data;
-    if (_data) {
-        _label->setText(QString::fromWCharArray(_data->getDescription()));
+    _description = description;
+    if (_description) {
+        _label->setText(_description->getDescription());
     }
 }
 
