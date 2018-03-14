@@ -53,7 +53,7 @@ private slots:
 
 private:
     DescriptionEditor* _description;
-    QTreeWidget* _values;
+    ShiftedTreeWidget* _values;
 
     QPushButton* _up;
     QPushButton* _down;

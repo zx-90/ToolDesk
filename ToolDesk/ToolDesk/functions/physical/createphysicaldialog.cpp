@@ -51,7 +51,7 @@ CreatePhysicalDialog::CreatePhysicalDialog(DeskData::IProject *project, QWidget 
     valuesLayout->setMargin(0);
     layout->addWidget(valuesWidget);
 
-    _values = new QTreeWidget(valuesWidget);
+    _values = new ShiftedTreeWidget(valuesWidget);
     _values->setHeaderLabels(QStringList() << "Value" << "Description");
     _values->setIndentation(0);
     valuesLayout->addWidget(_values);

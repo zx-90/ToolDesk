@@ -20,7 +20,7 @@
 #ifndef DESCRIPTIONEDITOR_H
 #define DESCRIPTIONEDITOR_H
 
-#include "desk/core/shiftedlineedit.h"
+#include "desk/core/shiftedwidgets.h"
 #include "include/widget/IDataEditor.h"
 
 namespace DeskGui {

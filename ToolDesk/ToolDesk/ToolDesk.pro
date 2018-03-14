@@ -46,7 +46,6 @@ SOURCES += main.cpp\
     include/widget/IDataViewer.cpp \
     data/editor/timeseriesviewer.cpp \
     data/editor/timeserieseditor.cpp \
-    desk/core/shiftedlineedit.cpp \
     data/editor/dim.cpp
 
 HEADERS  += mainwindow.h \
@@ -93,9 +92,10 @@ HEADERS  += mainwindow.h \
     include/widget/IDataViewer.h \
     data/editor/timeseriesviewer.h \
     data/editor/timeserieseditor.h \
-    desk/core/shiftedlineedit.h \
     data/editor/dim.h \
-    desk/core/treewidgetitemtemplate.h
+    desk/core/treewidgetitemtemplate.h \
+    desk/core/shiftedwidgettemplate.h \
+    desk/core/shiftedwidgets.h
 
 RESOURCES += \
     Images.qrc

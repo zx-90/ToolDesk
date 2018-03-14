@@ -20,20 +20,18 @@
 #ifndef SHIFTEDLINEEDIT_H
 #define SHIFTEDLINEEDIT_H
 
+#include "shiftedwidgettemplate.h"
+
 #include <QLineEdit>
+typedef ShiftedEditedWidgetTemplate<QLineEdit> ShiftedLineEdit;
 
-class ShiftedLineEdit : public QLineEdit
-{
-    Q_OBJECT
-public:
-    ShiftedLineEdit(QWidget* parent = nullptr, bool shiftLeft = true, bool shiftRight = true);
+#include <QTreeWidget>
+typedef ShiftedWidgetTemplate<QTreeWidget> ShiftedTreeWidget;
 
-protected:
-    bool _shiftLeft;
-    bool _shiftRight;
+#include <QComboBox>
+typedef ShiftedWidgetTemplate<QComboBox> ShiftedComboBox;
 
-    virtual void keyPressEvent(QKeyEvent *event) override;
-    virtual void focusInEvent(QFocusEvent *event) override;
-};
+#include <QSpinBox>
+typedef ShiftedWidgetTemplate<QSpinBox> ShiftedSpinBox;
 
 #endif // SHIFTEDLINEEDIT_H

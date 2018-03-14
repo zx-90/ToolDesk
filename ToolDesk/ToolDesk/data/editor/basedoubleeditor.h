@@ -22,7 +22,7 @@
 
 #include <QWidget>
 #include <QLabel>
-#include "desk/core/shiftedlineedit.h"
+#include "desk/core/shiftedwidgets.h"
 #include "include/data/DataList.h"
 
 namespace DeskGui {

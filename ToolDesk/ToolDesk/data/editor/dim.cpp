@@ -35,7 +35,7 @@ Dim::Dim(const DeskData::metricUnit &unit, QWidget *parent) :
 
     const int MIN_SYMBOL_WIDTH = 70;
     if (unit.isPrefixesAllowed) {
-        _prefixes = new QComboBox(this);
+        _prefixes = new ShiftedComboBox(this);
         _prefixes->setMinimumWidth(MIN_SYMBOL_WIDTH);
         for (DeskData::Size j = 0; j < DeskData::METRIC_PREFIXES_SIZE; ++j) {
             const DeskData::metrixPrefix prefix = DeskData::METRIC_PREFIXES[j];
@@ -61,7 +61,7 @@ Dim::Dim(const DeskData::metricUnit &unit, QWidget *parent) :
         dimLayout->addWidget(_label, BorderLayout::West);
     }
 
-    _power = new QSpinBox(this);
+    _power = new ShiftedSpinBox(this);
     _power->setMaximum(4);
     _power->setMinimum(-4);
     _power->setMinimumHeight(20);

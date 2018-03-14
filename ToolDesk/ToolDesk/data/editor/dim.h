@@ -22,6 +22,7 @@
 
 #include <QWidget>
 #include "include/data/DataList.h"
+#include "desk/core/shiftedwidgets.h"
 #include <QComboBox>
 #include <QLabel>
 #include <QSpinBox>
@@ -48,9 +49,9 @@ public slots:
     void zero();
 
 private:
-    QComboBox* _prefixes;
+    ShiftedComboBox* _prefixes;
     QLabel* _label;
-    QSpinBox* _power;
+    ShiftedSpinBox* _power;
     QPushButton* _zeroButton;
 
 };
